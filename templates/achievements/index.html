@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Achievements | LIFE RPG{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center" style="margin-bottom: 2rem;">
+    <h2 style="font-size: 1.8rem; margin: 0;">Achievements</h2>
+    <div class="font-bold text-lg text-gold flex items-center gap-2">
+        <i class="fa-solid fa-coins"></i> {{ user.character.gold }}
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="flex items-center gap-2" style="margin-bottom: 2rem;">
+    <div class="glass-panel text-sm font-semibold active filter-btn" style="padding: 0.5rem 2rem; cursor: pointer; border-radius: var(--radius-pill);">All</div>
+    <div class="glass-panel text-sm font-semibold filter-btn" style="padding: 0.5rem 2rem; cursor: pointer; border-radius: var(--radius-pill); opacity: 0.5;">In Progress</div>
+    <div class="glass-panel text-sm font-semibold filter-btn" style="padding: 0.5rem 2rem; cursor: pointer; border-radius: var(--radius-pill); opacity: 0.5;">Completed</div>
+</div>
+
+<div class="flex flex-col gap-4" id="achievements-container">
+    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+        Loading achievements...
+    </div>
+</div>
+
+<style>
+    .filter-btn.active { background: rgba(140, 82, 255, 0.2); color: var(--primary); border-color: rgba(140, 82, 255, 0.5); opacity: 1 !important; }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const achievements = await apiFetch('/api/achievements/');
+            const container = document.getElementById('achievements-container');
+            
+            if (achievements.length === 0) {
+                container.innerHTML = `<div style="text-align: center; padding: 3rem; color: var(--text-muted);">You have not unlocked any achievements yet. Keep adventuring!</div>`;
+                return;
+            }
+
+            container.innerHTML = achievements.map(a => `
+                <div class="card flex justify-between items-center" style="padding: 1.5rem 2rem; background: var(--bg-card); border-radius: var(--radius-lg);">
+                    <div class="flex items-center gap-6">
+                        <div style="width: 64px; height: 64px; border-radius: 16px; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); display: flex; justify-content: center; align-items: center; font-size: 2rem; flex-shrink: 0; box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);">
+                            ${a.achievement.icon || '🏆'}
+                        </div>
+                        <div>
+                            <h3 style="margin: 0; margin-bottom: 0.35rem; font-size: 1.15rem;">${a.achievement.name}</h3>
+                            <p class="text-muted" style="font-size: 0.85rem; margin: 0;">${a.achievement.description}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-col items-end gap-2">
+                        <div style="color: var(--gold); font-weight: bold; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 0.75rem; color: var(--secondary);">Completed</span>
+                            +${a.achievement.reward_gold} Gold
+                        </div>
+                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.4);">
+                            ${new Date(a.unlocked_at).toLocaleDateString()}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) {
+            console.error(e);
+        }
+    });
+</script>
+{% endblock %}

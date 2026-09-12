@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Onboarding | LIFE RPG{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center" style="min-height: 80vh; padding: 2rem;">
+    <h2 class="text-gradient" style="font-size: 2.5rem; letter-spacing: 2px; margin-bottom: 0.5rem;">CHOOSE YOUR PATH</h2>
+    <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 3rem;">The journey of a thousand miles begins with a single class.</p>
+    
+    <form method="POST" action="{% url 'onboarding' %}" style="width: 100%; max-width: 1000px;">
+        {% csrf_token %}
+        
+        <div class="grid grid-cols-3" style="gap: 1.5rem; margin-bottom: 3rem;">
+            <!-- Warrior -->
+            <label class="class-card glass-panel flex flex-col items-center text-center" style="padding: 2rem; cursor: pointer; border-radius: var(--radius-lg); position: relative; overflow: hidden; transition: all 0.3s;">
+                <input type="radio" name="rpg_class" value="WARRIOR" required style="display:none;">
+                <div class="avatar-container" style="width: 100px; height: 100px; border-radius: 50%; background: var(--bg-dark); margin-bottom: 1.5rem; padding: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Warrior&style=circle&accessoriesProbability=100" alt="Warrior" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; letter-spacing: 1px;">Warrior</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; margin-bottom: 1rem;">Master of discipline and physical endurance. A sturdy foundation.</p>
+                <div class="flex gap-2">
+                    <span class="badge" style="background: rgba(255, 75, 75, 0.1); color: var(--attr-str); border: 1px solid rgba(255, 75, 75, 0.2);">+5 STR</span>
+                    <span class="badge" style="background: rgba(255, 61, 0, 0.1); color: var(--attr-vit); border: 1px solid rgba(255, 61, 0, 0.2);">+2 VIT</span>
+                </div>
+            </label>
+
+            <!-- Mage -->
+            <label class="class-card glass-panel flex flex-col items-center text-center" style="padding: 2rem; cursor: pointer; border-radius: var(--radius-lg); position: relative; overflow: hidden; transition: all 0.3s;">
+                <input type="radio" name="rpg_class" value="MAGE" style="display:none;">
+                <div class="avatar-container" style="width: 100px; height: 100px; border-radius: 50%; background: var(--bg-dark); margin-bottom: 1.5rem; padding: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Mage&style=circle&top=hat" alt="Mage" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; letter-spacing: 1px;">Mage</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; margin-bottom: 1rem;">Seeker of knowledge. Thrives on study and deep understanding.</p>
+                <div class="flex gap-2">
+                    <span class="badge" style="background: rgba(75, 123, 255, 0.1); color: var(--attr-int); border: 1px solid rgba(75, 123, 255, 0.2);">+5 INT</span>
+                    <span class="badge" style="background: rgba(179, 136, 255, 0.1); color: var(--attr-wis); border: 1px solid rgba(179, 136, 255, 0.2);">+2 WIS</span>
+                </div>
+            </label>
+
+            <!-- Rogue -->
+            <label class="class-card glass-panel flex flex-col items-center text-center" style="padding: 2rem; cursor: pointer; border-radius: var(--radius-lg); position: relative; overflow: hidden; transition: all 0.3s;">
+                <input type="radio" name="rpg_class" value="ROGUE" style="display:none;">
+                <div class="avatar-container" style="width: 100px; height: 100px; border-radius: 50%; background: var(--bg-dark); margin-bottom: 1.5rem; padding: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rogue&style=circle&maskProbability=100" alt="Rogue" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; letter-spacing: 1px;">Rogue</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; margin-bottom: 1rem;">Fast, adaptable, and focused. Completes tasks with high efficiency.</p>
+                <div class="flex gap-2">
+                    <span class="badge" style="background: rgba(0, 230, 118, 0.1); color: var(--attr-agi); border: 1px solid rgba(0, 230, 118, 0.2);">+5 AGI</span>
+                    <span class="badge" style="background: rgba(253, 216, 53, 0.1); color: var(--attr-dis); border: 1px solid rgba(253, 216, 53, 0.2);">+2 DIS</span>
+                </div>
+            </label>
+
+            <!-- Engineer -->
+            <label class="class-card glass-panel flex flex-col items-center text-center" style="padding: 2rem; cursor: pointer; border-radius: var(--radius-lg); position: relative; overflow: hidden; transition: all 0.3s;">
+                <input type="radio" name="rpg_class" value="ENGINEER" style="display:none;">
+                <div class="avatar-container" style="width: 100px; height: 100px; border-radius: 50%; background: var(--bg-dark); margin-bottom: 1.5rem; padding: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Engineer&style=circle&glassesProbability=100" alt="Engineer" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; letter-spacing: 1px;">Engineer</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; margin-bottom: 1rem;">A builder of systems. Logical, highly disciplined, and code-focused.</p>
+                <div class="flex gap-2">
+                    <span class="badge" style="background: rgba(75, 123, 255, 0.1); color: var(--attr-int); border: 1px solid rgba(75, 123, 255, 0.2);">+5 INT</span>
+                    <span class="badge" style="background: rgba(253, 216, 53, 0.1); color: var(--attr-dis); border: 1px solid rgba(253, 216, 53, 0.2);">+2 DIS</span>
+                </div>
+            </label>
+
+            <!-- Paladin -->
+            <label class="class-card glass-panel flex flex-col items-center text-center" style="padding: 2rem; cursor: pointer; border-radius: var(--radius-lg); position: relative; overflow: hidden; transition: all 0.3s;">
+                <input type="radio" name="rpg_class" value="PALADIN" style="display:none;">
+                <div class="avatar-container" style="width: 100px; height: 100px; border-radius: 50%; background: var(--bg-dark); margin-bottom: 1.5rem; padding: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Paladin&style=circle&clothingColor=blue" alt="Paladin" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; letter-spacing: 1px;">Paladin</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; margin-bottom: 1rem;">A resilient defender. Prioritizes health and unyielding physical power.</p>
+                <div class="flex gap-2">
+                    <span class="badge" style="background: rgba(255, 61, 0, 0.1); color: var(--attr-vit); border: 1px solid rgba(255, 61, 0, 0.2);">+5 VIT</span>
+                    <span class="badge" style="background: rgba(255, 75, 75, 0.1); color: var(--attr-str); border: 1px solid rgba(255, 75, 75, 0.2);">+2 STR</span>
+                </div>
+            </label>
+
+            <!-- Archer -->
+            <label class="class-card glass-panel flex flex-col items-center text-center" style="padding: 2rem; cursor: pointer; border-radius: var(--radius-lg); position: relative; overflow: hidden; transition: all 0.3s;">
+                <input type="radio" name="rpg_class" value="ARCHER" style="display:none;">
+                <div class="avatar-container" style="width: 100px; height: 100px; border-radius: 50%; background: var(--bg-dark); margin-bottom: 1.5rem; padding: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Archer&style=circle&top=hood" alt="Archer" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; letter-spacing: 1px;">Archer</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; margin-bottom: 1rem;">Swift and precise. Excels in rapid task completion and physical finesse.</p>
+                <div class="flex gap-2">
+                    <span class="badge" style="background: rgba(0, 230, 118, 0.1); color: var(--attr-agi); border: 1px solid rgba(0, 230, 118, 0.2);">+5 AGI</span>
+                    <span class="badge" style="background: rgba(255, 75, 75, 0.1); color: var(--attr-str); border: 1px solid rgba(255, 75, 75, 0.2);">+2 STR</span>
+                </div>
+            </label>
+        </div>
+        
+        <div style="text-align: center;">
+            <button type="submit" class="btn btn-primary" style="padding: 1rem 4rem; font-size: 1.25rem; border-radius: var(--radius-pill); box-shadow: 0 0 20px var(--primary-glow);">AWAKEN</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Add nice hover effect for cards */
+    .class-card:hover {
+        transform: translateY(-5px);
+        background: var(--bg-card-hover);
+    }
+    
+    /* When a radio button is checked inside the card, style the card */
+    .class-card:has(input:checked) {
+        border-color: var(--primary);
+        background: rgba(140, 82, 255, 0.05);
+        box-shadow: 0 0 30px rgba(140, 82, 255, 0.15);
+    }
+    
+    /* Highlight the avatar ring when selected */
+    .class-card:has(input:checked) .avatar-container {
+        border-color: var(--primary);
+        box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    /* Highlight text when selected */
+    .class-card:has(input:checked) h3 {
+        color: var(--primary);
+        text-shadow: 0 0 10px var(--primary-glow);
+    }
+</style>
+{% endblock %}

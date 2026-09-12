@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}Character | LIFE RPG{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center" style="margin-bottom: 2rem;">
+    <h2 style="font-size: 1.8rem; margin: 0;">Character</h2>
+    <div style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">"Building a better me."</div>
+</div>
+
+<div class="grid grid-cols-3" style="gap: 2rem;">
+    <!-- Left Column: Character Profile & Equipment -->
+    <div class="flex flex-col gap-6" style="grid-column: span 1;">
+        <!-- Character Profile Card -->
+        <div class="card" style="padding: 0; overflow: hidden; position: relative;">
+            <div style="height: 350px; background: url('https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=600&auto=format&fit=crop') center/cover; position: relative;">
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(transparent, var(--bg-card) 90%);">
+                    <h3 style="margin: 0; font-size: 1.8rem; letter-spacing: 1px;">{{ user.username|upper }}</h3>
+                    <div style="color: var(--text-muted); font-size: 1rem; margin-bottom: 1rem;">Lv {{ user.character.level }} {{ user.character.rpg_class|default:'Engineer' }}</div>
+                    
+                    <div class="flex justify-between text-xs" style="margin-bottom: 0.5rem;">
+                        <span style="color: var(--text-muted); font-style: italic;">"Building a better me."</span>
+                        <span id="char-xp-text" style="color: var(--text-muted);">...</span>
+                    </div>
+                    <div class="progress-bar-container" style="height: 6px;">
+                        <div class="progress-bar-fill" id="char-xp-bar" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Equipped Items -->
+        <div class="card">
+            <h4 style="font-size: 1rem; margin-bottom: 1.5rem; color: var(--text-main);">Equipped Items</h4>
+            <div class="grid grid-cols-4" style="gap: 1rem;">
+                <div class="flex-col items-center gap-2 text-center">
+                    <div class="glass-panel flex items-center justify-center" style="width: 100%; aspect-ratio: 1; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+                        <i class="fa-solid fa-sack-xmark text-xl text-muted" style="color: var(--text-muted);"></i>
+                    </div>
+                    <div style="font-size: 0.75rem; font-weight: 600;">Backpack</div>
+                    <div style="font-size: 0.65rem; color: var(--attr-int);">+5 INT</div>
+                </div>
+                
+                <div class="flex-col items-center gap-2 text-center">
+                    <div class="glass-panel flex items-center justify-center" style="width: 100%; aspect-ratio: 1; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+                        <i class="fa-solid fa-khanda text-xl" style="color: var(--attr-str);"></i>
+                    </div>
+                    <div style="font-size: 0.75rem; font-weight: 600;">Code Blade</div>
+                    <div style="font-size: 0.65rem; color: var(--attr-str);">+10 STR</div>
+                </div>
+                
+                <div class="flex-col items-center gap-2 text-center">
+                    <div class="glass-panel flex items-center justify-center" style="width: 100%; aspect-ratio: 1; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+                        <i class="fa-solid fa-ring text-xl" style="color: var(--attr-wis);"></i>
+                    </div>
+                    <div style="font-size: 0.75rem; font-weight: 600;">Focus Ring</div>
+                    <div style="font-size: 0.65rem; color: var(--attr-wis);">+10 WIS</div>
+                </div>
+                
+                <div class="flex-col items-center gap-2 text-center">
+                    <div class="glass-panel flex items-center justify-center" style="width: 100%; aspect-ratio: 1; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+                        <i class="fa-solid fa-shoe-prints text-xl" style="color: var(--attr-agi);"></i>
+                    </div>
+                    <div style="font-size: 0.75rem; font-weight: 600;">Explorer Boots</div>
+                    <div style="font-size: 0.65rem; color: var(--attr-agi);">+5 AGI</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column: Attributes -->
+    <div class="card" style="grid-column: span 2; height: fit-content;">
+        <h3 style="font-size: 1.2rem; margin-bottom: 2rem;">Attributes</h3>
+        
+        <div class="flex flex-col gap-6">
+            <!-- Strength -->
+            <div class="flex items-center gap-4">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 75, 75, 0.15); display: flex; align-items: center; justify-content: center; color: var(--attr-str); flex-shrink: 0;">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+                <div style="width: 120px; font-size: 0.85rem; color: var(--text-muted);">Strength (STR)</div>
+                <div class="progress-bar-container" style="flex: 1; height: 8px; background: rgba(255,255,255,0.05);">
+                    <div class="progress-bar-fill" style="width: {{ user.character.total_strength }}%; max-width: 100%; background: var(--attr-str); box-shadow: 0 0 10px rgba(255, 75, 75, 0.4);"></div>
+                </div>
+                <div style="width: 30px; text-align: right; font-weight: bold; font-size: 0.9rem;">{{ user.character.total_strength }}</div>
+            </div>
+            
+            <!-- Intellect -->
+            <div class="flex items-center gap-4">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(75, 123, 255, 0.15); display: flex; align-items: center; justify-content: center; color: var(--attr-int); flex-shrink: 0;">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <div style="width: 120px; font-size: 0.85rem; color: var(--text-muted);">Intelligence (INT)</div>
+                <div class="progress-bar-container" style="flex: 1; height: 8px; background: rgba(255,255,255,0.05);">
+                    <div class="progress-bar-fill" style="width: {{ user.character.total_intellect }}%; max-width: 100%; background: var(--attr-int); box-shadow: 0 0 10px rgba(75, 123, 255, 0.4);"></div>
+                </div>
+                <div style="width: 30px; text-align: right; font-weight: bold; font-size: 0.9rem;">{{ user.character.total_intellect }}</div>
+            </div>
+            
+            <!-- Agility -->
+            <div class="flex items-center gap-4">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(0, 230, 118, 0.15); display: flex; align-items: center; justify-content: center; color: var(--attr-agi); flex-shrink: 0;">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <div style="width: 120px; font-size: 0.85rem; color: var(--text-muted);">Agility (AGI)</div>
+                <div class="progress-bar-container" style="flex: 1; height: 8px; background: rgba(255,255,255,0.05);">
+                    <div class="progress-bar-fill" style="width: {{ user.character.total_agility }}%; max-width: 100%; background: var(--attr-agi); box-shadow: 0 0 10px rgba(0, 230, 118, 0.4);"></div>
+                </div>
+                <div style="width: 30px; text-align: right; font-weight: bold; font-size: 0.9rem;">{{ user.character.total_agility }}</div>
+            </div>
+            
+            <!-- Vitality -->
+            <div class="flex items-center gap-4">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 61, 0, 0.15); display: flex; align-items: center; justify-content: center; color: var(--attr-vit); flex-shrink: 0;">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+                <div style="width: 120px; font-size: 0.85rem; color: var(--text-muted);">Vitality (VIT)</div>
+                <div class="progress-bar-container" style="flex: 1; height: 8px; background: rgba(255,255,255,0.05);">
+                    <div class="progress-bar-fill" style="width: {{ user.character.total_vitality }}%; max-width: 100%; background: var(--attr-vit); box-shadow: 0 0 10px rgba(255, 61, 0, 0.4);"></div>
+                </div>
+                <div style="width: 30px; text-align: right; font-weight: bold; font-size: 0.9rem;">{{ user.character.total_vitality }}</div>
+            </div>
+            
+            <!-- Wisdom -->
+            <div class="flex items-center gap-4">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(179, 136, 255, 0.15); display: flex; align-items: center; justify-content: center; color: var(--attr-wis); flex-shrink: 0;">
+                    <i class="fa-solid fa-book"></i>
+                </div>
+                <div style="width: 120px; font-size: 0.85rem; color: var(--text-muted);">Wisdom (WIS)</div>
+                <div class="progress-bar-container" style="flex: 1; height: 8px; background: rgba(255,255,255,0.05);">
+                    <div class="progress-bar-fill" style="width: {{ user.character.total_wisdom }}%; max-width: 100%; background: var(--attr-wis); box-shadow: 0 0 10px rgba(179, 136, 255, 0.4);"></div>
+                </div>
+                <div style="width: 30px; text-align: right; font-weight: bold; font-size: 0.9rem;">{{ user.character.total_wisdom }}</div>
+            </div>
+            
+            <!-- Discipline -->
+            <div class="flex items-center gap-4">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(253, 216, 53, 0.15); display: flex; align-items: center; justify-content: center; color: var(--attr-dis); flex-shrink: 0;">
+                    <i class="fa-solid fa-crosshairs"></i>
+                </div>
+                <div style="width: 120px; font-size: 0.85rem; color: var(--text-muted);">Discipline (DIS)</div>
+                <div class="progress-bar-container" style="flex: 1; height: 8px; background: rgba(255,255,255,0.05);">
+                    <div class="progress-bar-fill" style="width: {{ user.character.total_discipline }}%; max-width: 100%; background: var(--attr-dis); box-shadow: 0 0 10px rgba(253, 216, 53, 0.4);"></div>
+                </div>
+                <div style="width: 30px; text-align: right; font-weight: bold; font-size: 0.9rem;">{{ user.character.total_discipline }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const prog = await apiFetch('/api/progression/');
+            document.getElementById('char-xp-text').innerText = `${prog.current_level_xp} / ${prog.xp_for_next_level} XP`;
+            document.getElementById('char-xp-bar').style.width = `${prog.progress_percent}%`;
+        } catch (e) {
+            console.error(e);
+        }
+    });
+</script>
+{% endblock %}

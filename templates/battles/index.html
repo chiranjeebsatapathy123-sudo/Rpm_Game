@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Raid Boss Battles | LIFE RPG{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center" style="margin-bottom: 2rem;">
+    <div>
+        <h2 style="font-size: 1.8rem; margin: 0; margin-bottom: 0.25rem;">Raid Boss Battles</h2>
+        <div style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">"Slay your dragons."</div>
+    </div>
+</div>
+
+<div id="battles-container">
+    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+        <i class="fa-solid fa-spinner fa-spin fa-2x mb-2"></i><br>
+        Scouting for active raids...
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const battles = await apiFetch('/api/battles/');
+            const container = document.getElementById('battles-container');
+            
+            if (battles.length === 0) {
+                container.innerHTML = `
+                    <div class="card flex flex-col items-center justify-center gap-4" style="text-align: center; padding: 4rem 2rem; border: 1px dashed rgba(255,255,255,0.1); background: rgba(255,255,255,0.01);">
+                        <i class="fa-solid fa-dragon fa-4x" style="opacity: 0.1; color: var(--primary);"></i>
+                        <div>
+                            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">The Realm is at Peace</h3>
+                            <p style="color: var(--text-muted);">Your party is not currently fighting any raid bosses.</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = battles.map(b => {
+                const boss = b.boss;
+                const hpPercent = Math.max(0, (b.current_health / boss.max_health) * 100).toFixed(1);
+                
+                // Group damage logs by user
+                const damageMap = {};
+                b.damage_logs.forEach(log => {
+                    if (!damageMap[log.user_name]) damageMap[log.user_name] = 0;
+                    damageMap[log.user_name] += log.damage_dealt;
+                });
+                
+                const leaderboard = Object.entries(damageMap)
+                    .sort((a,b) => b[1] - a[1])
+                    .map(([name, dmg], index) => {
+                        let iconHtml = '';
+                        let colorClass = 'var(--text-muted)';
+                        if (index === 0) { iconHtml = '<i class="fa-solid fa-medal text-gold"></i> '; colorClass = 'var(--gold)'; }
+                        else if (index === 1) { iconHtml = '<i class="fa-solid fa-medal" style="color: #c0c0c0;"></i> '; }
+                        else if (index === 2) { iconHtml = '<i class="fa-solid fa-medal" style="color: #cd7f32;"></i> '; }
+                        
+                        return `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.03); background: rgba(255,255,255,0.01); border-radius: 4px; margin-bottom: 0.25rem;">
+                            <div class="flex items-center gap-2">
+                                <span style="color: ${colorClass}; width: 24px;">${iconHtml}</span>
+                                <span style="font-weight: 500;">${name}</span>
+                            </div>
+                            <span style="font-weight: bold; font-family: 'Outfit', sans-serif; letter-spacing: 1px; color: var(--error);">
+                                ${dmg.toLocaleString()} <span style="font-size: 0.7rem; color: var(--text-muted);">DMG</span>
+                            </span>
+                        </div>
+                    `}).join('');
+
+                return `
+                <div class="card" style="margin-bottom: 2rem; border-color: ${b.is_victorious ? 'var(--secondary)' : 'rgba(255, 75, 75, 0.3)'}; box-shadow: 0 0 30px ${b.is_victorious ? 'rgba(0, 210, 255, 0.1)' : 'rgba(255, 75, 75, 0.05)'}; position: relative; overflow: hidden;">
+                    
+                    ${b.is_victorious ? `
+                        <div style="position: absolute; top: -20px; right: -20px; background: var(--secondary); color: var(--bg-dark); font-weight: bold; padding: 2rem 3rem 1rem 3rem; transform: rotate(45deg); font-size: 0.8rem; letter-spacing: 2px; box-shadow: 0 0 20px rgba(0, 210, 255, 0.5);">
+                            VICTORY
+                        </div>
+                    ` : ''}
+                    
+                    <div class="flex items-start gap-6 mb-6">
+                        <div style="width: 100px; height: 100px; background: rgba(0,0,0,0.5); border-radius: 16px; border: 2px solid ${b.is_victorious ? 'var(--secondary)' : 'var(--error)'}; display: flex; align-items: center; justify-content: center; font-size: 3rem; box-shadow: inset 0 0 20px ${b.is_victorious ? 'rgba(0, 210, 255, 0.2)' : 'rgba(255, 75, 75, 0.2)'}; position: relative;">
+                            ${b.is_victorious ? '<i class="fa-solid fa-skull-crossbones text-secondary"></i>' : '<i class="fa-solid fa-dragon text-error"></i>'}
+                        </div>
+                        
+                        <div style="flex: 1;">
+                            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <span class="badge" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);"><i class="fa-solid fa-fire"></i> Raid Boss</span>
+                                <span class="badge" style="background: rgba(140, 82, 255, 0.1); color: var(--primary); border: 1px solid rgba(140, 82, 255, 0.2);"><i class="fa-solid fa-skull"></i> Difficulty: ${boss.difficulty}</span>
+                            </div>
+                            <h3 style="font-size: 1.8rem; margin: 0 0 0.5rem 0; text-shadow: 0 0 10px ${b.is_victorious ? 'var(--secondary-glow)' : 'rgba(255, 75, 75, 0.5)'};">${boss.name}</h3>
+                            <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">${boss.description}</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 2rem; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="display: flex; justify-content: space-between; font-size: 1rem; margin-bottom: 0.75rem; font-family: 'Outfit', sans-serif;">
+                            <span style="font-weight: 500; letter-spacing: 1px;"><i class="fa-solid fa-heart text-error"></i> BOSS HEALTH</span>
+                            <span style="font-weight: bold; color: ${b.is_victorious ? 'var(--text-muted)' : 'white'};">${b.current_health.toLocaleString()} / ${boss.max_health.toLocaleString()} HP <span style="color: var(--text-muted); font-weight: normal;">(${hpPercent}%)</span></span>
+                        </div>
+                        <div style="height: 24px; background: rgba(0,0,0,0.5); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); position: relative;">
+                            <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${hpPercent}%; background: ${b.is_victorious ? 'var(--text-muted)' : 'linear-gradient(90deg, #ff416c, #ff4b2b)'}; transition: width 1s ease-out; box-shadow: ${b.is_victorious ? 'none' : '0 0 10px #ff4b2b'};"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 style="margin: 0 0 1rem 0; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted);"><i class="fa-solid fa-chart-simple"></i> Damage Leaderboard</h4>
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            ${leaderboard || `
+                                <div style="text-align: center; padding: 1.5rem; border: 1px dashed rgba(255,255,255,0.1); border-radius: 8px; color: var(--text-muted);">
+                                    <i class="fa-solid fa-sword fa-lg mb-2"></i><br>
+                                    No damage dealt yet. Complete quests to attack!
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        } catch(e) { console.error(e); }
+    });
+</script>
+{% endblock %}

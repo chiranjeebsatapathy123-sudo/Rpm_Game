@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Inventory | LIFE RPG{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center" style="margin-bottom: 2rem;">
+    <div>
+        <h2 style="font-size: 1.8rem; margin: 0; margin-bottom: 0.25rem;">Vault of Relics</h2>
+        <div style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">"The tools of your trade."</div>
+    </div>
+</div>
+
+<div class="grid grid-cols-4" id="inventory-items-container" style="gap: 1.5rem;">
+    <div style="grid-column: span 4; text-align: center; padding: 3rem; color: var(--text-muted);">
+        Loading inventory...
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const items = await apiFetch('/api/inventory/');
+            const container = document.getElementById('inventory-items-container');
+            
+            if (items.length === 0) {
+                container.innerHTML = `<div style="grid-column: span 4; text-align: center; padding: 3rem; color: var(--text-muted);">Your vault is empty. Visit the shop to purchase items!</div>`;
+                return;
+            }
+
+            const itemIcons = {
+                'WEAPON': '<i class="fa-solid fa-khanda"></i>',
+                'ARMOR': '<i class="fa-solid fa-shield"></i>',
+                'ACCESSORY': '<i class="fa-solid fa-ring"></i>',
+                'POTION': '<i class="fa-solid fa-flask"></i>'
+            };
+
+            const rarityColors = {
+                'COMMON': 'var(--text-muted)',
+                'UNCOMMON': 'var(--attr-agi)',
+                'RARE': 'var(--attr-int)',
+                'EPIC': 'var(--primary)',
+                'LEGENDARY': 'var(--gold)'
+            };
+
+            container.innerHTML = items.map(inv => {
+                let metaHtml = '';
+                if (inv.item.metadata) {
+                    for (const [key, value] of Object.entries(inv.item.metadata)) {
+                        let formattedKey = key.replace('bonus_', '').toUpperCase();
+                        let formattedVal = value;
+                        if (formattedKey === 'XP_PCT') { formattedKey = 'XP'; formattedVal = `+${value}%`; }
+                        else if (formattedKey === 'GOLD_PCT') { formattedKey = 'GOLD'; formattedVal = `+${value}%`; }
+                        else { formattedVal = `+${value}`; }
+                        
+                        metaHtml += `<span style="background:rgba(255,255,255,0.1); font-size:0.7rem; padding: 0.15rem 0.4rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05);">${formattedVal} ${formattedKey}</span>`;
+                    }
+                }
+
+                return `
+                <div class="card flex flex-col justify-between" style="padding: 1.5rem; ${inv.equipped ? 'border-color: var(--primary); box-shadow: 0 0 15px rgba(140, 82, 255, 0.1);' : ''}">
+                    <div style="text-align: center;">
+                        <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem auto; background: rgba(255,255,255,0.03); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: ${rarityColors[inv.item.rarity] || 'white'}; border: 1px solid ${inv.equipped ? 'var(--primary)' : 'rgba(255,255,255,0.05)'}; box-shadow: inset 0 0 20px rgba(255,255,255,0.02);">
+                            ${itemIcons[inv.item.item_type] || '<i class="fa-solid fa-gem"></i>'}
+                        </div>
+                        <h4 style="margin: 0; font-size: 1.1rem; margin-bottom: 0.25rem;">${inv.item.name}</h4>
+                        <div style="font-size: 0.75rem; font-weight: 600; color: ${rarityColors[inv.item.rarity] || 'var(--text-muted)'}; margin-bottom: 1rem; letter-spacing: 1px;">
+                            ${inv.item.rarity} ${inv.item.item_type}
+                        </div>
+                        <div style="margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.25rem;">
+                            ${metaHtml}
+                        </div>
+                    </div>
+                    
+                    ${inv.equipped ? `
+                        <button class="btn" style="width: 100%; background: rgba(140, 82, 255, 0.2); border: 1px solid var(--primary); color: var(--primary); cursor: default;">
+                            <i class="fa-solid fa-check"></i> EQUIPPED
+                        </button>
+                    ` : `
+                        <button class="btn glass-panel" style="width: 100%; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='var(--bg-panel)'" onclick="equipItem(${inv.id}, this)">
+                            EQUIP
+                        </button>
+                    `}
+                </div>
+                `;
+            }).join('');
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadInventory();
+    });
+
+    async function equipItem(invId, btn) {
+        const itemId = invId;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-white"></i>';
+        try {
+            await apiFetch(`/api/inventory/${itemId}/equip/`, { method: 'POST' });
+            if (typeof SoundManager !== 'undefined') SoundManager.playEquip();
+            loadInventory();
+        } catch(e) {
+            alert(e.data?.error || "Error equipping item.");
+            btn.disabled = false;
+            btn.innerText = "EQUIP";
+        }
+    }
+</script>
+{% endblock %}

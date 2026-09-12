@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+
+{% block title %}Quests | LIFE RPG{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center" style="margin-bottom: 2rem;">
+    <h2 style="font-size: 1.8rem; margin: 0;">Quests</h2>
+    <div style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">"Turn your goals into quests."</div>
+</div>
+
+<!-- Filters & Actions -->
+<div class="flex justify-between items-center" style="margin-bottom: 1.5rem;">
+    <div class="flex gap-2">
+        <div id="filter-all" class="glass-panel text-sm font-semibold filter-btn active" style="padding: 0.5rem 1.5rem; cursor: pointer; border-radius: var(--radius-pill);" onclick="setFilter('all')">All</div>
+        <div id="filter-daily" class="glass-panel text-sm font-semibold filter-btn" style="padding: 0.5rem 1.5rem; cursor: pointer; border-radius: var(--radius-pill);" onclick="setFilter('daily')">Daily (Habits)</div>
+        <div id="filter-side" class="glass-panel text-sm font-semibold filter-btn" style="padding: 0.5rem 1.5rem; cursor: pointer; border-radius: var(--radius-pill);" onclick="setFilter('side')">Side Quests</div>
+    </div>
+    
+    <div class="flex gap-2">
+        <button class="btn btn-outline" style="padding: 0.5rem 1rem; border-radius: var(--radius-pill); font-size: 0.85rem;" onclick="toggleHabitModal()">+ New Habit</button>
+        <button class="btn btn-primary" style="padding: 0.5rem 1rem; border-radius: var(--radius-pill); font-size: 0.85rem;" onclick="toggleQuestModal()">+ Create Quest</button>
+    </div>
+</div>
+
+<!-- Task List -->
+<div id="tasks-container" class="flex flex-col gap-3">
+    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">Loading quests...</div>
+</div>
+
+<!-- Add Quest Modal -->
+<div id="quest-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
+    <div class="glass-panel" style="padding: 2rem; width: 100%; max-width: 500px;">
+        <h3>Create Quest</h3>
+        <form id="create-quest-form">
+            <div class="form-group">
+                <label class="form-label">Title</label>
+                <input type="text" id="q-title" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <select id="q-category" class="form-control">
+                    <option value="STUDY">Study</option>
+                    <option value="CODING">Coding</option>
+                    <option value="FITNESS">Fitness</option>
+                    <option value="HEALTH">Health</option>
+                    <option value="READING">Reading</option>
+                    <option value="WORK">Work</option>
+                    <option value="FINANCE">Finance</option>
+                    <option value="CUSTOM" selected>Custom</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-2">
+                <div class="form-group">
+                    <label class="form-label">Attribute Boost</label>
+                    <select id="q-attribute" class="form-control">
+                        <option value="STRENGTH">Strength</option>
+                        <option value="INTELLECT">Intellect</option>
+                        <option value="AGILITY">Agility</option>
+                        <option value="VITALITY">Vitality</option>
+                        <option value="WISDOM">Wisdom</option>
+                        <option value="DISCIPLINE">Discipline</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Difficulty</label>
+                    <select id="q-difficulty" class="form-control">
+                        <option value="EASY">Easy</option>
+                        <option value="MEDIUM" selected>Medium</option>
+                        <option value="HARD">Hard</option>
+                        <option value="EPIC">Epic</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary" style="flex:1;">Create Quest</button>
+                <button type="button" class="btn btn-outline" style="flex:1;" onclick="toggleQuestModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Habit Modal -->
+<div id="habit-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
+    <div class="glass-panel" style="padding: 2rem; width: 100%; max-width: 500px;">
+        <h3>Create Habit</h3>
+        <form id="create-habit-form">
+            <div class="form-group">
+                <label class="form-label">Habit Name</label>
+                <input type="text" id="h-title" class="form-control" placeholder="e.g., Drink 2L Water" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <select id="h-category" class="form-control">
+                    <option value="STUDY">Study</option>
+                    <option value="CODING">Coding</option>
+                    <option value="FITNESS">Fitness</option>
+                    <option value="HEALTH">Health</option>
+                    <option value="READING">Reading</option>
+                    <option value="WORK">Work</option>
+                    <option value="FINANCE">Finance</option>
+                    <option value="CUSTOM" selected>Custom</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-2">
+                <div class="form-group">
+                    <label class="form-label">Attribute Boost</label>
+                    <select id="h-attribute" class="form-control">
+                        <option value="STRENGTH">Strength</option>
+                        <option value="INTELLECT">Intellect</option>
+                        <option value="AGILITY">Agility</option>
+                        <option value="VITALITY">Vitality</option>
+                        <option value="WISDOM">Wisdom</option>
+                        <option value="DISCIPLINE">Discipline</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Difficulty</label>
+                    <select id="h-difficulty" class="form-control">
+                        <option value="EASY">Easy</option>
+                        <option value="MEDIUM" selected>Medium</option>
+                        <option value="HARD">Hard</option>
+                        <option value="EPIC">Epic</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary" style="flex:1;">Create Habit</button>
+                <button type="button" class="btn btn-outline" style="flex:1;" onclick="toggleHabitModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .filter-btn { transition: all 0.2s; }
+    .filter-btn:hover { background: rgba(255,255,255,0.1); }
+    .filter-btn.active { background: rgba(140, 82, 255, 0.2); color: var(--primary); border-color: rgba(140, 82, 255, 0.5); }
+    .hover-checkbox:hover { border-color: var(--primary) !important; background: rgba(140, 82, 255, 0.2) !important; }
+    .hover-checkbox:active { transform: scale(0.9); }
+</style>
+
+<script>
+    let allQuests = [];
+    let allHabits = [];
+    let currentFilter = 'all'; // 'all', 'daily', 'side'
+
+    const attrIcons = {
+        'STR': '<i class="fa-solid fa-dumbbell"></i>',
+        'INT': '<i class="fa-solid fa-laptop-code"></i>',
+        'WIS': '<i class="fa-solid fa-book-open"></i>',
+        'VIT': '<i class="fa-solid fa-droplet"></i>',
+        'AGI': '<i class="fa-solid fa-person-running"></i>',
+        'DIS': '<i class="fa-solid fa-bullseye"></i>',
+    };
+
+    const attrColors = {
+        'STR': 'var(--attr-str)',
+        'INT': 'var(--attr-int)',
+        'WIS': 'var(--attr-wis)',
+        'VIT': 'var(--attr-vit)',
+        'AGI': 'var(--attr-agi)',
+        'DIS': 'var(--attr-dis)',
+    };
+
+    function toggleQuestModal() {
+        const modal = document.getElementById('quest-modal');
+        modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+    }
+
+    function toggleHabitModal() {
+        const modal = document.getElementById('habit-modal');
+        modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+    }
+
+    function setFilter(filter) {
+        currentFilter = filter;
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`filter-${filter}`).classList.add('active');
+        renderTasks();
+    }
+
+    async function loadTasks() {
+        try {
+            const [qRes, hRes] = await Promise.all([
+                apiFetch('/api/quests/'),
+                apiFetch('/api/habits/')
+            ]);
+            allQuests = qRes;
+            allHabits = hRes;
+            renderTasks();
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function renderTasks() {
+        const list = document.getElementById('tasks-container');
+        let html = '';
+        const today = new Date().toISOString().split('T')[0];
+
+        // Combine and filter
+        let tasksToRender = [];
+        if (currentFilter === 'all' || currentFilter === 'side') {
+            tasksToRender = tasksToRender.concat(allQuests.map(q => ({...q, type: 'quest'})));
+        }
+        if (currentFilter === 'all' || currentFilter === 'daily') {
+            tasksToRender = tasksToRender.concat(allHabits.map(h => ({...h, type: 'habit'})));
+        }
+
+        // Sort by status (incomplete first)
+        tasksToRender.sort((a, b) => {
+            const aDone = a.type === 'quest' ? a.status === 'COMPLETED' : (a.last_completed_at && a.last_completed_at.startsWith(today));
+            const bDone = b.type === 'quest' ? b.status === 'COMPLETED' : (b.last_completed_at && b.last_completed_at.startsWith(today));
+            return aDone - bDone;
+        });
+
+        if (tasksToRender.length === 0) {
+            list.innerHTML = `<div style="text-align: center; padding: 3rem; color: var(--text-muted);">No tasks found for this filter.</div>`;
+            return;
+        }
+
+        tasksToRender.forEach(t => {
+            const isHabit = t.type === 'habit';
+            const isCompleted = isHabit ? (t.last_completed_at && t.last_completed_at.startsWith(today)) : t.status === 'COMPLETED';
+            
+            html += `
+                <div class="glass-panel flex items-center justify-between" style="padding: 1.25rem 1.5rem; transition: background 0.2s; cursor: pointer; ${isCompleted ? 'opacity: 0.5;' : ''}" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='var(--bg-panel)'">
+                    <div class="flex items-center gap-4">
+                        <div style="width: 54px; height: 54px; border-radius: 14px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; color: ${attrColors[t.attribute]};">
+                            ${attrIcons[t.attribute] || '<i class="fa-solid fa-star"></i>'}
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; font-size: 1.1rem; ${isCompleted ? 'text-decoration: line-through;' : ''}">${t.title}</h4>
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem;">
+                                ${isHabit ? `Daily habit (Streak: ${t.streak_count})` : (t.description || 'Complete this task to advance.')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <div class="flex items-center gap-4 text-sm font-semibold">
+                            <span style="color: var(--secondary);">+${t.xp_reward} XP</span>
+                            <span style="color: ${attrColors[t.attribute]};">+1 ${t.attribute}</span>
+                        </div>
+                        <div class="glass-panel" style="padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.75rem; color: var(--text-muted);">
+                            ${isHabit ? 'Today' : 'Quest'}
+                        </div>
+                        <div style="width: 28px; height: 28px; border: 2px solid ${isCompleted ? 'var(--primary)' : 'rgba(255,255,255,0.2)'}; background: ${isCompleted ? 'var(--primary)' : 'transparent'}; border-radius: 8px; cursor: pointer; transition: all 0.2s;" class="flex items-center justify-center hover-checkbox" ${isCompleted ? '' : `onclick="${isHabit ? `completeHabit(${t.id}, this)` : `completeQuest(${t.id}, this)`}"`}>
+                            ${isCompleted ? '<i class="fa-solid fa-check text-white text-sm"></i>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        list.innerHTML = html;
+    }
+
+    document.getElementById('create-quest-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+            title: document.getElementById('q-title').value,
+            category: document.getElementById('q-category').value,
+            attribute: document.getElementById('q-attribute').value,
+            difficulty: document.getElementById('q-difficulty').value
+        };
+        try {
+            await apiFetch('/api/quests/', { method: 'POST', body: JSON.stringify(data) });
+            toggleQuestModal();
+            loadTasks();
+            e.target.reset();
+        } catch (error) { alert("Failed to create quest."); }
+    });
+
+    document.getElementById('create-habit-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+            title: document.getElementById('h-title').value,
+            category: document.getElementById('h-category').value,
+            attribute: document.getElementById('h-attribute').value,
+            difficulty: document.getElementById('h-difficulty').value
+        };
+        try {
+            await apiFetch('/api/habits/', { method: 'POST', body: JSON.stringify(data) });
+            toggleHabitModal();
+            loadTasks();
+            e.target.reset();
+        } catch (error) { alert("Failed to create habit."); }
+    });
+
+    async function completeQuest(questId, btnElement) {
+        btnElement.style.background = 'var(--primary)';
+        btnElement.style.borderColor = 'var(--primary)';
+        btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-white text-xs"></i>';
+        try {
+            const result = await apiFetch(`/api/quests/${questId}/complete/`, { method: 'POST' });
+            btnElement.innerHTML = '<i class="fa-solid fa-check text-white text-xs"></i>';
+            showRewardAnimation(result);
+            setTimeout(loadTasks, 1500);
+        } catch (e) {
+            alert(e.data?.error || "Error completing quest.");
+            btnElement.innerHTML = '';
+            btnElement.style.background = 'transparent';
+        }
+    }
+
+    async function completeHabit(habitId, btnElement) {
+        btnElement.style.background = 'var(--primary)';
+        btnElement.style.borderColor = 'var(--primary)';
+        btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-white text-xs"></i>';
+        try {
+            const result = await apiFetch(`/api/habits/${habitId}/complete/`, { method: 'POST' });
+            btnElement.innerHTML = '<i class="fa-solid fa-check text-white text-xs"></i>';
+            showRewardAnimation(result);
+            setTimeout(loadTasks, 1500);
+        } catch (e) {
+            alert(e.data?.error || "Error completing habit.");
+            btnElement.innerHTML = '';
+            btnElement.style.background = 'transparent';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadTasks);
+</script>
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}Analytics | LIFE RPG{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center" style="margin-bottom: 2rem;">
+    <div>
+        <h2 style="font-size: 1.8rem; margin: 0; margin-bottom: 0.25rem;">Analytics</h2>
+        <div style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">"Measure what matters."</div>
+    </div>
+</div>
+
+<div class="grid grid-cols-4" id="analytics-overview" style="margin-bottom: 2rem; gap: 1.5rem;">
+    <!-- Populated by JS -->
+    <div class="card" style="text-align: center; grid-column: span 4; color: var(--text-muted);">
+        Loading analytics...
+    </div>
+</div>
+
+<div class="grid grid-cols-2" style="gap: 1.5rem;">
+    <div class="card">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;">XP Over Time</h3>
+        <canvas id="xpChart"></canvas>
+    </div>
+    
+    <div class="card">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;">Quest Categories</h3>
+        <div style="height: 300px; display: flex; justify-content: center;">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- GitHub style activity calendar placeholder -->
+<div class="card" style="margin-top: 1.5rem;">
+    <h3 style="font-size: 1.2rem; margin-bottom: 1.5rem;">Activity Heatmap</h3>
+    <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 1rem;" id="activity-heatmap">
+        <!-- JS will render squares here -->
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const data = await apiFetch('/api/analytics/');
+        
+        // Render Overview
+        document.getElementById('analytics-overview').innerHTML = `
+            <div class="card flex flex-col items-center justify-center gap-2">
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(0, 210, 255, 0.1); color: var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <div style="font-size: 1.75rem; font-weight: bold; line-height: 1;">${data.total_xp}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Total XP Earned</div>
+            </div>
+            
+            <div class="card flex flex-col items-center justify-center gap-2">
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(255, 215, 0, 0.1); color: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+                <div style="font-size: 1.75rem; font-weight: bold; line-height: 1;">${data.total_gold_earned}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Total Gold Earned</div>
+            </div>
+            
+            <div class="card flex flex-col items-center justify-center gap-2">
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(140, 82, 255, 0.1); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+                <div style="font-size: 1.75rem; font-weight: bold; line-height: 1;">${data.quests_completed}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Quests Completed</div>
+            </div>
+            
+            <div class="card flex flex-col items-center justify-center gap-2">
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(255, 75, 75, 0.1); color: var(--attr-str); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+                <div style="font-size: 1.75rem; font-weight: bold; line-height: 1;">${data.longest_streak}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Longest Streak</div>
+            </div>
+        `;
+        
+        const chartsData = await apiFetch('/api/analytics/charts/');
+        
+        // Render Charts with Dynamic Data
+        const ctxXp = document.getElementById('xpChart').getContext('2d');
+        new Chart(ctxXp, {
+            type: 'line',
+            data: {
+                labels: chartsData.trends.labels,
+                datasets: [{
+                    label: 'XP Earned',
+                    data: chartsData.trends.xp,
+                    borderColor: '#8c52ff', // Primary
+                    backgroundColor: 'rgba(140, 82, 255, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#8c52ff',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#8b949e' } },
+                    x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#8b949e' } }
+                }
+            }
+        });
+        
+        const ctxCat = document.getElementById('categoryChart').getContext('2d');
+        new Chart(ctxCat, {
+            type: 'doughnut',
+            data: {
+                labels: chartsData.categories.labels,
+                datasets: [{
+                    data: chartsData.categories.values,
+                    backgroundColor: [
+                        '#4b7bff', // INT
+                        '#00e676', // AGI
+                        '#b388ff', // WIS
+                        '#ff3d00', // VIT
+                        '#ff4b4b', // STR
+                        '#fdd835', // DIS
+                        '#8c52ff'  // Primary
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: { position: 'right', labels: { color: '#f8f9fa', padding: 20, font: { family: "'Inter', sans-serif" } } }
+                }
+            }
+        });
+        
+        // Render simple heatmap
+        const heatmap = document.getElementById('activity-heatmap');
+        let heatmapHTML = '';
+        for(let i=0; i<60; i++) {
+            // Randomly determine activity level for demonstration
+            const level = Math.floor(Math.random() * 4);
+            let color = 'rgba(255,255,255,0.03)';
+            if (level === 1) color = 'rgba(140, 82, 255, 0.3)';
+            if (level === 2) color = 'rgba(140, 82, 255, 0.6)';
+            if (level === 3) color = 'rgba(140, 82, 255, 1)';
+            
+            heatmapHTML += `<div style="width: 14px; height: 14px; background: ${color}; border-radius: 4px; flex-shrink: 0; cursor: pointer; transition: transform 0.1s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'" title="Activity level: ${level}"></div>`;
+        }
+        heatmap.innerHTML = heatmapHTML;
+        
+    } catch (e) {
+        console.error(e);
+    }
+});
+</script>
+{% endblock %}

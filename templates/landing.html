@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}LIFE RPG - Turn Your Life Into An RPG{% endblock %}
+
+{% block extra_head %}
+<style>
+    .landing-hero {
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 2rem;
+    }
+    .landing-hero h1 {
+        font-size: 4rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+        text-shadow: 0 0 20px var(--primary-glow);
+    }
+    .landing-hero p {
+        font-size: 1.5rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+    .landing-features {
+        padding: 4rem 2rem;
+    }
+    .feature-card {
+        text-align: center;
+    }
+    .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--secondary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="landing-hero">
+    <h1 class="text-gradient">TURN YOUR LIFE INTO AN RPG</h1>
+    <p>Complete real-world quests. Earn XP. Build your character. Level up your life.</p>
+    <div style="display: flex; gap: 1rem;">
+        <a href="{% url 'register' %}" class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;">START YOUR JOURNEY</a>
+        <a href="{% url 'login' %}" class="btn btn-outline" style="font-size: 1.2rem; padding: 1rem 2rem;">LOGIN</a>
+    </div>
+</div>
+
+<div class="landing-features grid grid-cols-3">
+    <div class="card feature-card">
+        <div class="feature-icon">⚔️</div>
+        <h3>Epic Quests</h3>
+        <p class="text-muted">Turn your daily tasks, habits, and goals into rewarding quests with varying difficulties.</p>
+    </div>
+    <div class="card feature-card">
+        <div class="feature-icon">📈</div>
+        <h3>Level Up</h3>
+        <p class="text-muted">Earn XP and Gold. Increase your character's attributes based on the type of activities you complete.</p>
+    </div>
+    <div class="card feature-card">
+        <div class="feature-icon">🏆</div>
+        <h3>Achievements</h3>
+        <p class="text-muted">Maintain streaks, unlock rare achievements, and purchase virtual items in the shop.</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% block title %}Social Hub | LIFE RPG{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center" style="margin-bottom: 2rem;">
+    <div>
+        <h2 style="font-size: 1.8rem; margin: 0; margin-bottom: 0.25rem;">The Tavern</h2>
+        <div style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">"Gather your allies and conquer together."</div>
+    </div>
+    <div style="display: flex; gap: 1rem;">
+        <button class="btn btn-outline" style="border-radius: var(--radius-pill); padding: 0.5rem 1.2rem;" onclick="toggleFriendModal()">
+            <i class="fa-solid fa-user-plus"></i> Add Ally
+        </button>
+        <button class="btn btn-primary" style="border-radius: var(--radius-pill); padding: 0.5rem 1.2rem; box-shadow: 0 0 15px var(--primary-glow);" onclick="togglePartyModal()">
+            <i class="fa-solid fa-users"></i> Form Party
+        </button>
+    </div>
+</div>
+
+<div class="grid grid-cols-2" style="gap: 1.5rem;">
+    <!-- Friends List -->
+    <div class="card">
+        <h3 style="font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.75rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-user-group text-primary"></i> Allies
+        </h3>
+        <div id="friends-list" class="flex flex-col gap-3">
+            <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                <i class="fa-solid fa-spinner fa-spin fa-2x mb-2"></i><br>
+                Loading allies...
+            </div>
+        </div>
+    </div>
+
+    <!-- Party Info -->
+    <div class="card">
+        <h3 style="font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.75rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-shield-halved text-secondary"></i> Your Party
+        </h3>
+        <div id="party-list" class="flex flex-col gap-3">
+            <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                <i class="fa-solid fa-spinner fa-spin fa-2x mb-2"></i><br>
+                Loading party...
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Friend Modal -->
+<div id="friend-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(10, 11, 16, 0.85); backdrop-filter: blur(5px); z-index:1000; justify-content:center; align-items:center;">
+    <div class="glass-panel" style="padding: 2.5rem; width: 100%; max-width: 450px; border-radius: var(--radius-lg); border: 1px solid rgba(140, 82, 255, 0.2); box-shadow: 0 0 30px rgba(140, 82, 255, 0.1);">
+        <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;"><i class="fa-solid fa-user-plus text-primary"></i> Add Ally</h3>
+        <form id="add-friend-form">
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label">Ally's User ID</label>
+                <input type="number" id="f-user-id" class="form-control" placeholder="e.g., 2" required style="font-size: 1.2rem; text-align: center; letter-spacing: 2px;">
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary" style="flex:1; padding: 0.75rem;">Send Request</button>
+                <button type="button" class="btn btn-outline" style="flex:1; padding: 0.75rem;" onclick="toggleFriendModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Form Party Modal -->
+<div id="party-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(10, 11, 16, 0.85); backdrop-filter: blur(5px); z-index:1000; justify-content:center; align-items:center;">
+    <div class="glass-panel" style="padding: 2.5rem; width: 100%; max-width: 450px; border-radius: var(--radius-lg); border: 1px solid rgba(0, 210, 255, 0.2); box-shadow: 0 0 30px rgba(0, 210, 255, 0.1);">
+        <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center;"><i class="fa-solid fa-users text-secondary"></i> Form Party</h3>
+        <form id="form-party-form">
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label">Party Name</label>
+                <input type="text" id="p-name" class="form-control" placeholder="e.g., The Dragon Slayers" required style="font-size: 1.1rem; text-align: center;">
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary" style="flex:1; padding: 0.75rem; background: var(--secondary); border-color: var(--secondary); color: var(--bg-dark);">Create</button>
+                <button type="button" class="btn btn-outline" style="flex:1; padding: 0.75rem;" onclick="togglePartyModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleFriendModal() {
+        const m = document.getElementById('friend-modal');
+        if (m.style.display === 'none') {
+            m.style.display = 'flex';
+            m.animate([{opacity: 0, transform: 'scale(0.95)'}, {opacity: 1, transform: 'scale(1)'}], {duration: 200, fill: 'forwards'});
+        } else {
+            m.style.display = 'none';
+        }
+    }
+    
+    function togglePartyModal() {
+        const m = document.getElementById('party-modal');
+        if (m.style.display === 'none') {
+            m.style.display = 'flex';
+            m.animate([{opacity: 0, transform: 'scale(0.95)'}, {opacity: 1, transform: 'scale(1)'}], {duration: 200, fill: 'forwards'});
+        } else {
+            m.style.display = 'none';
+        }
+    }
+
+    async function loadSocial() {
+        try {
+            const friendships = await apiFetch('/api/friendships/');
+            const friendsList = document.getElementById('friends-list');
+            if (friendships.length === 0) {
+                friendsList.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted); background: rgba(255,255,255,0.02); border-radius: 8px;">
+                        <i class="fa-solid fa-ghost fa-2x" style="opacity: 0.3; margin-bottom: 1rem;"></i><br>
+                        You adventure alone. Send a friend request!
+                    </div>
+                `;
+            } else {
+                friendsList.innerHTML = friendships.map(f => {
+                    const isMeUser1 = f.user1 && f.user1.id === {{ user.id }};
+                    const friendName = isMeUser1 ? (f.user2 ? f.user2.username : 'Unknown') : (f.user1 ? f.user1.username : 'Unknown');
+                    
+                    let actionHtml = '';
+                    if (f.status === 'PENDING' && !isMeUser1) {
+                        actionHtml = `<button class="btn btn-primary" style="padding: 0.3rem 0.75rem; font-size: 0.8rem; border-radius: 4px;" onclick="acceptFriend(${f.id})"><i class="fa-solid fa-check"></i> Accept</button>`;
+                    } else if (f.status === 'PENDING' && isMeUser1) {
+                        actionHtml = `<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;"><i class="fa-solid fa-clock"></i> Sent</span>`;
+                    }
+                    
+                    let badgeColor = f.status === 'ACCEPTED' ? 'var(--attr-agi)' : 'var(--attr-dis)';
+                    
+                    return `
+                    <div class="glass-panel" style="padding: 1rem; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='var(--bg-panel)'">
+                        <div class="flex items-center gap-3">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg-dark); overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${friendName}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div>
+                                <div style="font-weight: bold; font-size: 1.05rem;">${friendName}</div>
+                                <div style="font-size: 0.75rem; color: ${badgeColor}; text-transform: uppercase; letter-spacing: 1px;">${f.status}</div>
+                            </div>
+                        </div>
+                        <div>
+                            ${actionHtml}
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+        } catch(e) { console.error(e); }
+
+        try {
+            const parties = await apiFetch('/api/parties/');
+            const partyList = document.getElementById('party-list');
+            if (parties.length === 0) {
+                partyList.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted); background: rgba(255,255,255,0.02); border-radius: 8px;">
+                        <i class="fa-solid fa-campground fa-2x" style="opacity: 0.3; margin-bottom: 1rem;"></i><br>
+                        You are not in a party. Form one to take on Raid Bosses!
+                    </div>
+                `;
+            } else {
+                partyList.innerHTML = parties.map(p => `
+                    <div class="glass-panel" style="padding: 1.5rem; border-radius: var(--radius-lg); border-top: 3px solid var(--secondary);">
+                        <h4 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.3rem; color: var(--secondary); display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fa-solid fa-crown"></i> ${p.name}
+                        </h4>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">Party Leader</div>
+                            <div class="flex items-center gap-2">
+                                <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--bg-dark); overflow: hidden;">
+                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${p.leader ? p.leader.username : 'Unknown'}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <span style="font-weight: 500;">${p.leader ? p.leader.username : 'Unknown'}</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">Members (${p.members.length})</div>
+                            <div class="flex flex-wrap gap-2">
+                                ${p.members.map(m => `
+                                    <div class="badge" style="background: rgba(255,255,255,0.05); padding: 0.3rem 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+                                        <div style="width: 16px; height: 16px; border-radius: 50%; background: var(--bg-dark); overflow: hidden;">
+                                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${m.username}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                        ${m.username}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    document.getElementById('add-friend-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+        try {
+            await apiFetch('/api/friendships/', {
+                method: 'POST',
+                body: JSON.stringify({ user2_id: document.getElementById('f-user-id').value })
+            });
+            toggleFriendModal();
+            loadSocial();
+        } catch(e) { alert("Error sending request."); }
+        btn.disabled = false;
+        btn.innerHTML = 'Send Request';
+    });
+
+    document.getElementById('form-party-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating...';
+        try {
+            await apiFetch('/api/parties/', {
+                method: 'POST',
+                body: JSON.stringify({ name: document.getElementById('p-name').value })
+            });
+            togglePartyModal();
+            loadSocial();
+        } catch(e) { alert("Error creating party."); }
+        btn.disabled = false;
+        btn.innerHTML = 'Create';
+    });
+
+    async function acceptFriend(id) {
+        try {
+            await apiFetch(`/api/friendships/${id}/accept/`, { method: 'POST' });
+            loadSocial();
+        } catch(e) { alert("Error accepting request."); }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadSocial);
+</script>
+{% endblock %}
