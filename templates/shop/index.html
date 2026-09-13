@@ -1,25 +1,29 @@
 {% extends 'base.html' %}
 
-{% block title %}Shop | LIFE RPG{% endblock %}
+{% block title %}RPG Marketplace | LIFE RPG{% endblock %}
 
 {% block content %}
-<div class="flex justify-between items-center" style="margin-bottom: 2rem;">
+<!-- Page Header -->
+<div class="flex justify-between items-center flex-wrap gap-4" style="margin-bottom: 2rem;">
     <div>
-        <h2 style="font-size: 1.8rem; margin: 0; margin-bottom: 0.25rem;">The Grand Bazaar</h2>
-        <div style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">"Equip for the journey ahead."</div>
+        <h2 style="font-size: 2rem; margin-bottom: 0.25rem; font-weight: 800;" class="text-gradient">The Grand Bazaar</h2>
+        <div style="color: var(--text-muted); font-size: 0.95rem; font-weight: 500;">Spend earned gold coins on equipment, titles, frames, and potions.</div>
     </div>
-    <div class="glass-panel flex items-center gap-3" style="padding: 0.75rem 1.5rem; border-radius: var(--radius-pill); border-color: rgba(255, 215, 0, 0.3);">
-        <i class="fa-solid fa-coins text-gold" style="font-size: 1.25rem;"></i>
+    
+    <div class="glass-panel flex items-center gap-3" style="padding: 0.6rem 1.25rem; border-radius: var(--radius-pill); border-color: rgba(245, 158, 11, 0.3); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);">
+        <i class="fa-solid fa-coins text-gold" style="font-size: 1.2rem;"></i>
         <div class="flex-col">
             <span class="font-bold text-sm text-gold" id="shop-gold" style="line-height: 1;">{{ user.character.gold }}</span>
-            <span class="text-xs" style="color: var(--text-muted);">Treasury</span>
+            <span class="text-xs" style="color: var(--text-muted); font-weight: 600;">Gold Balance</span>
         </div>
     </div>
 </div>
 
+<!-- Marketplace Items Grid -->
 <div class="grid grid-cols-4" id="shop-items-container" style="gap: 1.5rem;">
-    <div style="grid-column: span 4; text-align: center; padding: 3rem; color: var(--text-muted);">
-        Loading shop items...
+    <div style="grid-column: span 4; text-align: center; padding: 4rem 1rem; color: var(--text-muted);" class="glass-panel">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 0.75rem; color: var(--primary);"></i>
+        <div>Stocking marketplace items...</div>
     </div>
 </div>
 
@@ -30,7 +34,13 @@
             const container = document.getElementById('shop-items-container');
             
             if (items.length === 0) {
-                container.innerHTML = `<div style="grid-column: span 4; text-align: center; padding: 3rem; color: var(--text-muted);">The shop is currently empty. The merchants will restock soon.</div>`;
+                container.innerHTML = `
+                    <div style="grid-column: span 4; text-align: center; padding: 4rem 1rem; color: var(--text-muted);" class="glass-panel">
+                        <i class="fa-solid fa-store-slash" style="font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.4;"></i>
+                        <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.25rem;">Marketplace Empty</div>
+                        <div>The merchants will restock soon with new items.</div>
+                    </div>
+                `;
                 return;
             }
 
@@ -38,34 +48,36 @@
                 'WEAPON': '<i class="fa-solid fa-khanda"></i>',
                 'ARMOR': '<i class="fa-solid fa-shield"></i>',
                 'ACCESSORY': '<i class="fa-solid fa-ring"></i>',
+                'TITLE': '<i class="fa-solid fa-scroll"></i>',
+                'FRAME': '<i class="fa-solid fa-border-all"></i>',
                 'POTION': '<i class="fa-solid fa-flask"></i>'
             };
 
-            const rarityColors = {
-                'COMMON': 'var(--text-muted)',
-                'UNCOMMON': 'var(--attr-agi)',
-                'RARE': 'var(--attr-int)',
-                'EPIC': 'var(--primary)',
-                'LEGENDARY': 'var(--gold)'
+            const rarityClass = {
+                'COMMON': 'rarity-common',
+                'UNCOMMON': 'rarity-rare',
+                'RARE': 'rarity-rare',
+                'EPIC': 'rarity-epic',
+                'LEGENDARY': 'rarity-legendary'
             };
 
             container.innerHTML = items.map(item => `
-                <div class="card flex flex-col justify-between" style="padding: 1.5rem;">
+                <div class="card flex flex-col justify-between ${rarityClass[item.rarity] || 'rarity-common'}" style="padding: 1.5rem; transition: var(--transition);">
                     <div style="text-align: center;">
-                        <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem auto; background: rgba(255,255,255,0.03); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: ${rarityColors[item.rarity] || 'white'}; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 0 20px rgba(255,255,255,0.02);">
+                        <div style="width: 80px; height: 80px; margin: 0 auto 1.25rem auto; background: rgba(255,255,255,0.02); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; border: 1px solid var(--border-color);" class="${rarityClass[item.rarity] || ''}">
                             ${itemIcons[item.item_type] || '<i class="fa-solid fa-gem"></i>'}
                         </div>
-                        <h4 style="margin: 0; font-size: 1.1rem; margin-bottom: 0.25rem;">${item.name}</h4>
-                        <div style="font-size: 0.75rem; font-weight: 600; color: ${rarityColors[item.rarity] || 'var(--text-muted)'}; margin-bottom: 1rem; letter-spacing: 1px;">
+                        <h4 style="margin: 0; font-size: 1.15rem; font-weight: 800; margin-bottom: 0.25rem;">${item.name}</h4>
+                        <div class="badge" style="margin-bottom: 1rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color);">
                             ${item.rarity} ${item.item_type}
                         </div>
-                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                            ${item.description || 'A mysterious item of great power.'}
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.5rem;">
+                            ${item.description || 'A valuable RPG item that empowers your journey.'}
                         </div>
                     </div>
                     
-                    <button class="btn glass-panel flex justify-center items-center gap-2" style="width: 100%; border-color: rgba(255, 215, 0, 0.3); color: var(--gold); transition: all 0.2s;" onmouseover="this.style.background='rgba(255,215,0,0.1)'" onmouseout="this.style.background='var(--bg-panel)'" onclick="buyItem(${item.id}, ${item.price}, this)">
-                        <i class="fa-solid fa-coins"></i> ${item.price} G
+                    <button class="btn btn-primary flex justify-center items-center gap-2" style="width: 100%; font-size: 0.95rem;" onclick="buyItem(${item.id}, ${item.price}, this)">
+                        <i class="fa-solid fa-coins text-gold"></i> ${item.price} G
                     </button>
                 </div>
             `).join('');
@@ -76,27 +88,25 @@
 
     async function buyItem(itemId, price, btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-gold"></i>';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-gold"></i> Processing';
         try {
             await apiFetch(`/api/shop/${itemId}/purchase/`, { method: 'POST' });
             
-            // Deduct gold locally for fast UI update
             const goldSpan = document.getElementById('shop-gold');
             let currentGold = parseInt(goldSpan.innerText);
-            goldSpan.innerText = currentGold - price;
+            if (goldSpan) goldSpan.innerText = currentGold - price;
             
-            // Also update top nav gold (which is in base.html)
             const navGold = document.getElementById('top-nav-gold');
             if (navGold) navGold.innerText = currentGold - price;
             
             btn.innerHTML = '<i class="fa-solid fa-check text-white"></i> Purchased';
-            btn.style.background = "var(--primary)";
-            btn.style.borderColor = "var(--primary)";
+            btn.style.background = "var(--success)";
+            btn.style.borderColor = "var(--success)";
             btn.style.color = "white";
         } catch (e) {
             alert(e.data?.error || "Error purchasing item.");
             btn.disabled = false;
-            btn.innerHTML = `<i class="fa-solid fa-coins"></i> ${price} G`;
+            btn.innerHTML = `<i class="fa-solid fa-coins text-gold"></i> ${price} G`;
         }
     }
 </script>

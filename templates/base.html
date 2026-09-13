@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}LIFE RPG{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="/static/css/index.css">
@@ -26,43 +26,64 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body>
+    {% if user.is_authenticated %}
+    <!-- Mobile Top Header Bar -->
+    <header class="mobile-header">
+        <div class="flex items-center gap-3">
+            <div style="width: 34px; height: 34px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px var(--primary-glow);">
+                <i class="fa-solid fa-shield-halved" style="color: white; font-size: 1.1rem;"></i>
+            </div>
+            <span style="font-family: var(--font-header); font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; color: var(--text-main);">LIFE RPG</span>
+        </div>
+        <button class="btn btn-ghost" onclick="toggleMobileSidebar()" style="padding: 0.5rem; font-size: 1.25rem;">
+            <i class="fa-solid fa-bars" id="mobile-menu-icon"></i>
+        </button>
+    </header>
+
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+    {% endif %}
+
     <div class="app-container">
         {% if user.is_authenticated %}
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div style="margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem; padding: 0 0.5rem;">
-                <div style="width: 32px; height: 32px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                    <i class="fa-solid fa-shield-halved" style="color: white; font-size: 1.2rem;"></i>
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="app-sidebar">
+            <div style="margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.5rem 0;">
+                <div style="width: 38px; height: 38px; background: linear-gradient(135deg, var(--primary), #6d28d9); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 16px var(--primary-glow);">
+                    <i class="fa-solid fa-shield-halved" style="color: white; font-size: 1.25rem;"></i>
                 </div>
-                <h2 style="margin: 0; font-size: 1.25rem; letter-spacing: 2px;">LIFE RPG</h2>
+                <div>
+                    <h2 style="margin: 0; font-size: 1.25rem; letter-spacing: 2px; font-weight: 800;" class="text-gradient">LIFE RPG</h2>
+                    <div style="font-size: 0.7rem; color: var(--text-subtle); font-weight: 600; letter-spacing: 1px;">LEVEL UP LIFE</div>
+                </div>
             </div>
             
-            <nav style="flex: 1;">
-                <ul class="nav-menu" style="margin-top: 0;">
-                    <li class="nav-item"><a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><i class="fa-solid fa-house" style="width: 24px; text-align: center; margin-right: 12px; font-size: 1.1rem;"></i> Dashboard</a></li>
-                    <li class="nav-item"><a href="{% url 'quests' %}" class="nav-link {% if request.resolver_match.url_name == 'quests' %}active{% endif %}"><i class="fa-solid fa-list-check" style="width: 24px; text-align: center; margin-right: 12px; font-size: 1.1rem;"></i> Quests</a></li>
-                    <li class="nav-item"><a href="{% url 'character' %}" class="nav-link {% if request.resolver_match.url_name == 'character' %}active{% endif %}"><i class="fa-solid fa-user" style="width: 24px; text-align: center; margin-right: 12px; font-size: 1.1rem;"></i> Character</a></li>
-                    <li class="nav-item"><a href="{% url 'achievements' %}" class="nav-link {% if request.resolver_match.url_name == 'achievements' %}active{% endif %}"><i class="fa-solid fa-medal" style="width: 24px; text-align: center; margin-right: 12px; font-size: 1.1rem;"></i> Achievements</a></li>
-                    <li class="nav-item"><a href="{% url 'shop' %}" class="nav-link {% if request.resolver_match.url_name == 'shop' %}active{% endif %}"><i class="fa-solid fa-store" style="width: 24px; text-align: center; margin-right: 12px; font-size: 1.1rem;"></i> Shop</a></li>
-                    <li class="nav-item"><a href="{% url 'inventory' %}" class="nav-link {% if request.resolver_match.url_name == 'inventory' %}active{% endif %}"><i class="fa-solid fa-box" style="width: 24px; text-align: center; margin-right: 12px; font-size: 1.1rem;"></i> Inventory</a></li>
-                    <li class="nav-item"><a href="{% url 'analytics' %}" class="nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}"><i class="fa-solid fa-chart-line" style="width: 24px; text-align: center; margin-right: 12px; font-size: 1.1rem;"></i> Analytics</a></li>
-                    <li class="nav-item"><a href="{% url 'settings' %}" class="nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}"><i class="fa-solid fa-gear" style="width: 24px; text-align: center; margin-right: 12px; font-size: 1.1rem;"></i> Settings</a></li>
+            <nav style="flex: 1; overflow-y: auto;">
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+                    <li class="nav-item"><a href="{% url 'quests' %}" class="nav-link {% if request.resolver_match.url_name == 'quests' %}active{% endif %}"><i class="fa-solid fa-list-check"></i> Quests</a></li>
+                    <li class="nav-item"><a href="{% url 'character' %}" class="nav-link {% if request.resolver_match.url_name == 'character' %}active{% endif %}"><i class="fa-solid fa-user-shield"></i> Character</a></li>
+                    <li class="nav-item"><a href="{% url 'achievements' %}" class="nav-link {% if request.resolver_match.url_name == 'achievements' %}active{% endif %}"><i class="fa-solid fa-medal"></i> Achievements</a></li>
+                    <li class="nav-item"><a href="{% url 'shop' %}" class="nav-link {% if request.resolver_match.url_name == 'shop' %}active{% endif %}"><i class="fa-solid fa-store"></i> Shop</a></li>
+                    <li class="nav-item"><a href="{% url 'inventory' %}" class="nav-link {% if request.resolver_match.url_name == 'inventory' %}active{% endif %}"><i class="fa-solid fa-box-open"></i> Inventory</a></li>
+                    <li class="nav-item"><a href="{% url 'analytics' %}" class="nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
+                    <li class="nav-item"><a href="{% url 'settings' %}" class="nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}"><i class="fa-solid fa-gear"></i> Settings</a></li>
                 </ul>
             </nav>
             
-            <div style="margin-top: auto; padding: 1rem 0.5rem; display: flex; align-items: center; gap: 1rem; border-top: 1px solid rgba(255,255,255,0.05);">
-                <div style="width: 40px; height: 40px; border-radius: 50%; background: #333; overflow: hidden; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1);">
+            <!-- User Mini Profile Footer -->
+            <div style="margin-top: auto; padding: 0.85rem 0.75rem; display: flex; align-items: center; gap: 0.85rem; border-top: 1px solid var(--border-color); background: rgba(0, 0, 0, 0.15); border-radius: var(--radius-md);">
+                <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--bg-card); overflow: hidden; flex-shrink: 0; border: 2px solid var(--primary-glow); box-shadow: 0 0 10px var(--primary-glow);">
                     <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}https://api.dicebear.com/7.x/avataaars/svg?seed={{ user.username }}{% endif %}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
-                <div style="overflow: hidden;">
-                    <div style="font-weight: 600; font-size: 0.95rem; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">{{ user.username|upper }}</div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">Lv {{ user.character.level }} {{ user.character.rpg_class|default:'Adventurer' }}</div>
+                <div style="overflow: hidden; flex: 1;">
+                    <div style="font-weight: 700; font-size: 0.95rem; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; color: var(--text-main);">{{ user.username|upper }}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">Lv {{ user.character.level }} {{ user.character.rpg_class|default:'Adventurer' }}</div>
                 </div>
             </div>
         </aside>
         {% endif %}
 
-        <!-- Main Content -->
+        <!-- Main Content Area -->
         <main class="main-content">
             {% block content %}{% endblock %}
         </main>
@@ -70,16 +91,31 @@
 
     <!-- Global Reward Overlay -->
     <div id="reward-overlay">
-        <div class="glass-panel reward-card" id="reward-card-content">
-            <h2 class="text-gradient">QUEST COMPLETE</h2>
+        <div class="glass-panel reward-card animate-popup" id="reward-card-content">
+            <div style="width: 60px; height: 60px; background: rgba(139, 92, 246, 0.2); border: 2px solid var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; box-shadow: 0 0 20px var(--primary-glow);">
+                <i class="fa-solid fa-trophy" style="font-size: 1.75rem; color: var(--gold);"></i>
+            </div>
+            <h2 class="text-gradient" style="font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 800;">QUEST COMPLETE!</h2>
             <div id="reward-stats-container"></div>
-            <button class="btn btn-primary" style="margin-top: 2rem;" onclick="closeRewardOverlay()">Continue Journey</button>
+            <button class="btn btn-primary" style="margin-top: 1.75rem; width: 100%; font-size: 1rem;" onclick="closeRewardOverlay()">Continue Journey <i class="fa-solid fa-arrow-right"></i></button>
         </div>
     </div>
 
     <script>
-        // Store JWT token if any logic uses it
         const csrfToken = '{{ csrf_token }}';
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('app-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const icon = document.getElementById('mobile-menu-icon');
+            if (sidebar && overlay) {
+                const isOpen = sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active', isOpen);
+                if (icon) {
+                    icon.className = isOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+                }
+            }
+        }
         
         // Register Service Worker
         if ('serviceWorker' in navigator) {

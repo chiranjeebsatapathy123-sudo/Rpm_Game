@@ -1,40 +1,66 @@
 {% extends 'base.html' %}
 
-{% block title %}Quests | LIFE RPG{% endblock %}
+{% block title %}Quests & Habits | LIFE RPG{% endblock %}
 
 {% block content %}
-<div class="flex justify-between items-center" style="margin-bottom: 2rem;">
-    <h2 style="font-size: 1.8rem; margin: 0;">Quests</h2>
-    <div style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">"Turn your goals into quests."</div>
-</div>
-
-<!-- Filters & Actions -->
-<div class="flex justify-between items-center" style="margin-bottom: 1.5rem;">
-    <div class="flex gap-2">
-        <div id="filter-all" class="glass-panel text-sm font-semibold filter-btn active" style="padding: 0.5rem 1.5rem; cursor: pointer; border-radius: var(--radius-pill);" onclick="setFilter('all')">All</div>
-        <div id="filter-daily" class="glass-panel text-sm font-semibold filter-btn" style="padding: 0.5rem 1.5rem; cursor: pointer; border-radius: var(--radius-pill);" onclick="setFilter('daily')">Daily (Habits)</div>
-        <div id="filter-side" class="glass-panel text-sm font-semibold filter-btn" style="padding: 0.5rem 1.5rem; cursor: pointer; border-radius: var(--radius-pill);" onclick="setFilter('side')">Side Quests</div>
+<!-- Page Header -->
+<div class="flex justify-between items-center flex-wrap gap-4" style="margin-bottom: 2rem;">
+    <div>
+        <h2 style="font-size: 2rem; margin-bottom: 0.25rem; font-weight: 800;" class="text-gradient">Quest Log & Daily Habits</h2>
+        <div style="color: var(--text-muted); font-size: 0.95rem; font-weight: 500;">Transform real-life goals into rewarding RPG challenges.</div>
     </div>
     
-    <div class="flex gap-2">
-        <button class="btn btn-outline" style="padding: 0.5rem 1rem; border-radius: var(--radius-pill); font-size: 0.85rem;" onclick="toggleHabitModal()">+ New Habit</button>
-        <button class="btn btn-primary" style="padding: 0.5rem 1rem; border-radius: var(--radius-pill); font-size: 0.85rem;" onclick="toggleQuestModal()">+ Create Quest</button>
+    <div class="flex items-center gap-3">
+        <button class="btn btn-outline" onclick="toggleHabitModal()">
+            <i class="fa-solid fa-rotate-right"></i> + New Habit
+        </button>
+        <button class="btn btn-primary" onclick="toggleQuestModal()">
+            <i class="fa-solid fa-plus"></i> + Create Quest
+        </button>
     </div>
 </div>
 
-<!-- Task List -->
-<div id="tasks-container" class="flex flex-col gap-3">
-    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">Loading quests...</div>
+<!-- Category Filters & Stats -->
+<div class="flex justify-between items-center flex-wrap gap-4" style="margin-bottom: 1.75rem;">
+    <div class="flex gap-2 flex-wrap">
+        <div id="filter-all" class="glass-panel text-sm font-semibold filter-btn active" style="padding: 0.6rem 1.5rem; cursor: pointer; border-radius: var(--radius-pill);" onclick="setFilter('all')">
+            <i class="fa-solid fa-layer-group" style="margin-right: 0.4rem;"></i> All Tasks
+        </div>
+        <div id="filter-daily" class="glass-panel text-sm font-semibold filter-btn" style="padding: 0.6rem 1.5rem; cursor: pointer; border-radius: var(--radius-pill);" onclick="setFilter('daily')">
+            <i class="fa-solid fa-repeat" style="margin-right: 0.4rem;"></i> Daily Habits
+        </div>
+        <div id="filter-side" class="glass-panel text-sm font-semibold filter-btn" style="padding: 0.6rem 1.5rem; cursor: pointer; border-radius: var(--radius-pill);" onclick="setFilter('side')">
+            <i class="fa-solid fa-scroll" style="margin-right: 0.4rem;"></i> Side Quests
+        </div>
+    </div>
 </div>
 
-<!-- Add Quest Modal -->
-<div id="quest-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
-    <div class="glass-panel" style="padding: 2rem; width: 100%; max-width: 500px;">
-        <h3>Create Quest</h3>
+<!-- Task Cards Container -->
+<div id="tasks-container" class="flex flex-col gap-3">
+    <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 0.75rem; color: var(--primary);"></i>
+        <div>Loading your quest log...</div>
+    </div>
+</div>
+
+<!-- Create Quest Modal -->
+<div id="quest-modal" class="modal-overlay">
+    <div class="modal-card">
+        <div class="flex justify-between items-center" style="margin-bottom: 1.5rem;">
+            <div class="flex items-center gap-3">
+                <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(139, 92, 246, 0.15); display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                    <i class="fa-solid fa-scroll" style="font-size: 1.25rem;"></i>
+                </div>
+                <h3 style="margin: 0; font-size: 1.4rem; font-weight: 800;" class="text-gradient">Create New Quest</h3>
+            </div>
+            <button class="btn btn-ghost" onclick="toggleQuestModal()" style="padding: 0.4rem 0.6rem;">
+                <i class="fa-solid fa-xmark" style="font-size: 1.25rem;"></i>
+            </button>
+        </div>
         <form id="create-quest-form">
             <div class="form-group">
-                <label class="form-label">Title</label>
-                <input type="text" id="q-title" class="form-control" required>
+                <label class="form-label">Quest Title</label>
+                <input type="text" id="q-title" class="form-control" placeholder="e.g., Complete 3 LeetCode algorithms" required>
             </div>
             <div class="form-group">
                 <label class="form-label">Category</label>
@@ -62,16 +88,16 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Difficulty</label>
+                    <label class="form-label">Difficulty Level</label>
                     <select id="q-difficulty" class="form-control">
-                        <option value="EASY">Easy</option>
-                        <option value="MEDIUM" selected>Medium</option>
-                        <option value="HARD">Hard</option>
-                        <option value="EPIC">Epic</option>
+                        <option value="EASY">Easy (+50 XP)</option>
+                        <option value="MEDIUM" selected>Medium (+100 XP)</option>
+                        <option value="HARD">Hard (+200 XP)</option>
+                        <option value="EPIC">Epic (+500 XP)</option>
                     </select>
                 </div>
             </div>
-            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
                 <button type="submit" class="btn btn-primary" style="flex:1;">Create Quest</button>
                 <button type="button" class="btn btn-outline" style="flex:1;" onclick="toggleQuestModal()">Cancel</button>
             </div>
@@ -79,10 +105,20 @@
     </div>
 </div>
 
-<!-- Add Habit Modal -->
-<div id="habit-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
-    <div class="glass-panel" style="padding: 2rem; width: 100%; max-width: 500px;">
-        <h3>Create Habit</h3>
+<!-- Create Habit Modal -->
+<div id="habit-modal" class="modal-overlay">
+    <div class="modal-card">
+        <div class="flex justify-between items-center" style="margin-bottom: 1.5rem;">
+            <div class="flex items-center gap-3">
+                <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(6, 182, 212, 0.15); display: flex; align-items: center; justify-content: center; color: var(--secondary);">
+                    <i class="fa-solid fa-rotate-right" style="font-size: 1.25rem;"></i>
+                </div>
+                <h3 style="margin: 0; font-size: 1.4rem; font-weight: 800;" class="text-gradient">Create Daily Habit</h3>
+            </div>
+            <button class="btn btn-ghost" onclick="toggleHabitModal()" style="padding: 0.4rem 0.6rem;">
+                <i class="fa-solid fa-xmark" style="font-size: 1.25rem;"></i>
+            </button>
+        </div>
         <form id="create-habit-form">
             <div class="form-group">
                 <label class="form-label">Habit Name</label>
@@ -114,17 +150,17 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Difficulty</label>
+                    <label class="form-label">Difficulty Level</label>
                     <select id="h-difficulty" class="form-control">
-                        <option value="EASY">Easy</option>
-                        <option value="MEDIUM" selected>Medium</option>
-                        <option value="HARD">Hard</option>
-                        <option value="EPIC">Epic</option>
+                        <option value="EASY">Easy (+50 XP)</option>
+                        <option value="MEDIUM" selected>Medium (+100 XP)</option>
+                        <option value="HARD">Hard (+200 XP)</option>
+                        <option value="EPIC">Epic (+500 XP)</option>
                     </select>
                 </div>
             </div>
-            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                <button type="submit" class="btn btn-primary" style="flex:1;">Create Habit</button>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-secondary" style="flex:1;">Create Habit</button>
                 <button type="button" class="btn btn-outline" style="flex:1;" onclick="toggleHabitModal()">Cancel</button>
             </div>
         </form>
@@ -132,24 +168,24 @@
 </div>
 
 <style>
-    .filter-btn { transition: all 0.2s; }
-    .filter-btn:hover { background: rgba(255,255,255,0.1); }
-    .filter-btn.active { background: rgba(140, 82, 255, 0.2); color: var(--primary); border-color: rgba(140, 82, 255, 0.5); }
-    .hover-checkbox:hover { border-color: var(--primary) !important; background: rgba(140, 82, 255, 0.2) !important; }
-    .hover-checkbox:active { transform: scale(0.9); }
+    .filter-btn { transition: var(--transition); border: 1px solid var(--border-color); color: var(--text-muted); }
+    .filter-btn:hover { background: rgba(255,255,255,0.06); color: var(--text-main); }
+    .filter-btn.active { background: linear-gradient(90deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.05)); color: var(--primary); border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 0 12px var(--primary-glow); }
+    .hover-checkbox:hover { border-color: var(--primary) !important; background: rgba(139, 92, 246, 0.25) !important; transform: scale(1.05); }
+    .hover-checkbox:active { transform: scale(0.95); }
 </style>
 
 <script>
     let allQuests = [];
     let allHabits = [];
-    let currentFilter = 'all'; // 'all', 'daily', 'side'
+    let currentFilter = 'all';
 
     const attrIcons = {
         'STR': '<i class="fa-solid fa-dumbbell"></i>',
         'INT': '<i class="fa-solid fa-laptop-code"></i>',
         'WIS': '<i class="fa-solid fa-book-open"></i>',
-        'VIT': '<i class="fa-solid fa-droplet"></i>',
-        'AGI': '<i class="fa-solid fa-person-running"></i>',
+        'VIT': '<i class="fa-solid fa-heart-pulse"></i>',
+        'AGI': '<i class="fa-solid fa-bolt"></i>',
         'DIS': '<i class="fa-solid fa-bullseye"></i>',
     };
 
@@ -164,12 +200,12 @@
 
     function toggleQuestModal() {
         const modal = document.getElementById('quest-modal');
-        modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+        modal.classList.toggle('active');
     }
 
     function toggleHabitModal() {
         const modal = document.getElementById('habit-modal');
-        modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+        modal.classList.toggle('active');
     }
 
     function setFilter(filter) {
@@ -198,7 +234,6 @@
         let html = '';
         const today = new Date().toISOString().split('T')[0];
 
-        // Combine and filter
         let tasksToRender = [];
         if (currentFilter === 'all' || currentFilter === 'side') {
             tasksToRender = tasksToRender.concat(allQuests.map(q => ({...q, type: 'quest'})));
@@ -207,7 +242,6 @@
             tasksToRender = tasksToRender.concat(allHabits.map(h => ({...h, type: 'habit'})));
         }
 
-        // Sort by status (incomplete first)
         tasksToRender.sort((a, b) => {
             const aDone = a.type === 'quest' ? a.status === 'COMPLETED' : (a.last_completed_at && a.last_completed_at.startsWith(today));
             const bDone = b.type === 'quest' ? b.status === 'COMPLETED' : (b.last_completed_at && b.last_completed_at.startsWith(today));
@@ -215,7 +249,13 @@
         });
 
         if (tasksToRender.length === 0) {
-            list.innerHTML = `<div style="text-align: center; padding: 3rem; color: var(--text-muted);">No tasks found for this filter.</div>`;
+            list.innerHTML = `
+                <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);" class="glass-panel">
+                    <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.5;"></i>
+                    <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.25rem;">No tasks found</div>
+                    <div>There are no active tasks matching your current filter.</div>
+                </div>
+            `;
             return;
         }
 
@@ -224,28 +264,28 @@
             const isCompleted = isHabit ? (t.last_completed_at && t.last_completed_at.startsWith(today)) : t.status === 'COMPLETED';
             
             html += `
-                <div class="glass-panel flex items-center justify-between" style="padding: 1.25rem 1.5rem; transition: background 0.2s; cursor: pointer; ${isCompleted ? 'opacity: 0.5;' : ''}" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='var(--bg-panel)'">
+                <div class="glass-panel flex items-center justify-between flex-wrap gap-4" style="padding: 1.25rem 1.5rem; transition: var(--transition); border-radius: var(--radius-md); ${isCompleted ? 'opacity: 0.6;' : ''}" onmouseover="this.style.borderColor='var(--primary-glow)'" onmouseout="this.style.borderColor='var(--border-color)'">
                     <div class="flex items-center gap-4">
-                        <div style="width: 54px; height: 54px; border-radius: 14px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; color: ${attrColors[t.attribute]};">
+                        <div style="width: 50px; height: 50px; border-radius: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: ${attrColors[t.attribute] || 'var(--primary)'};">
                             ${attrIcons[t.attribute] || '<i class="fa-solid fa-star"></i>'}
                         </div>
                         <div>
-                            <h4 style="margin: 0; font-size: 1.1rem; ${isCompleted ? 'text-decoration: line-through;' : ''}">${t.title}</h4>
-                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem;">
-                                ${isHabit ? `Daily habit (Streak: ${t.streak_count})` : (t.description || 'Complete this task to advance.')}
+                            <h4 style="margin: 0; font-size: 1.05rem; font-weight: 700; ${isCompleted ? 'text-decoration: line-through;' : ''}">${t.title}</h4>
+                            <div style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.25rem;">
+                                ${isHabit ? `Daily Habit • <span style="color: var(--gold); font-weight: 600;">🔥 ${t.streak_count} day streak</span>` : (t.description || 'Complete this task to advance.')}
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center gap-6">
-                        <div class="flex items-center gap-4 text-sm font-semibold">
-                            <span style="color: var(--secondary);">+${t.xp_reward} XP</span>
-                            <span style="color: ${attrColors[t.attribute]};">+1 ${t.attribute}</span>
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <div class="flex items-center gap-2 text-xs font-semibold">
+                            <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: var(--secondary); border: 1px solid rgba(6, 182, 212, 0.3);">+${t.xp_reward} XP</span>
+                            <span class="badge" style="background: rgba(255, 255, 255, 0.05); color: ${attrColors[t.attribute] || 'var(--primary)'}; border: 1px solid rgba(255, 255, 255, 0.1);">+1 ${t.attribute}</span>
                         </div>
-                        <div class="glass-panel" style="padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.75rem; color: var(--text-muted);">
-                            ${isHabit ? 'Today' : 'Quest'}
+                        <div class="badge" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); color: var(--text-muted);">
+                            ${isHabit ? 'Daily Habit' : 'Quest'}
                         </div>
-                        <div style="width: 28px; height: 28px; border: 2px solid ${isCompleted ? 'var(--primary)' : 'rgba(255,255,255,0.2)'}; background: ${isCompleted ? 'var(--primary)' : 'transparent'}; border-radius: 8px; cursor: pointer; transition: all 0.2s;" class="flex items-center justify-center hover-checkbox" ${isCompleted ? '' : `onclick="${isHabit ? `completeHabit(${t.id}, this)` : `completeQuest(${t.id}, this)`}"`}>
-                            ${isCompleted ? '<i class="fa-solid fa-check text-white text-sm"></i>' : ''}
+                        <div style="width: 30px; height: 30px; border: 2px solid ${isCompleted ? 'var(--primary)' : 'rgba(255,255,255,0.2)'}; background: ${isCompleted ? 'var(--primary)' : 'transparent'}; border-radius: 8px; cursor: pointer; transition: all 0.2s;" class="flex items-center justify-center hover-checkbox" ${isCompleted ? '' : `onclick="${isHabit ? `completeHabit(${t.id}, this)` : `completeQuest(${t.id}, this)`}"`} title="${isCompleted ? 'Completed' : 'Mark Complete'}">
+                            ${isCompleted ? '<i class="fa-solid fa-check text-white text-xs"></i>' : ''}
                         </div>
                     </div>
                 </div>
