@@ -3,180 +3,206 @@
 {% block title %}Dashboard | LIFE RPG{% endblock %}
 
 {% block content %}
-<!-- Top Navigation Area -->
-<div class="flex justify-between items-center" style="margin-bottom: 2rem;">
+<!-- Top Header & User Quick Stats -->
+<div class="flex justify-between items-center flex-wrap gap-4" style="margin-bottom: 2rem;">
     <div>
-        <h2 style="font-size: 1.8rem; margin-bottom: 0.25rem;">Good evening, {{ user.username|upper }} 👋</h2>
-        <div style="color: var(--text-muted); font-size: 0.95rem;">A better you, one quest at a time.</div>
+        <h2 style="font-size: 2rem; margin-bottom: 0.25rem; font-weight: 800;" class="text-gradient">Welcome back, {{ user.username|upper }} 👋</h2>
+        <div style="color: var(--text-muted); font-size: 0.95rem; font-weight: 500;">Conquer your real-life quests today.</div>
     </div>
     
-    <div class="flex items-center gap-4">
-        <div class="glass-panel flex items-center gap-2" style="padding: 0.5rem 1rem; border-radius: var(--radius-pill); display: none;">
-            <div style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">"Discipline today, a stronger tomorrow."</div>
-        </div>
-        
-        <div class="glass-panel flex items-center gap-3" style="padding: 0.5rem 1rem; border-radius: var(--radius-pill);">
-            <i class="fa-solid fa-fire" style="color: #ff5252; font-size: 1.2rem;"></i>
+    <div class="flex items-center gap-3 flex-wrap">
+        <!-- Streak Card -->
+        <div class="glass-panel flex items-center gap-3" style="padding: 0.6rem 1.25rem; border-radius: var(--radius-pill); border-color: rgba(255, 82, 82, 0.25); box-shadow: 0 4px 15px rgba(255, 82, 82, 0.15);">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 82, 82, 0.15); display: flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-fire" style="color: #ff5252; font-size: 1.1rem;"></i>
+            </div>
             <div class="flex-col">
-                <span class="font-bold text-sm" style="line-height: 1;">{{ user.streak.current_streak|default:"0" }}</span>
-                <span class="text-xs" style="color: var(--text-muted);">day streak</span>
+                <span class="font-bold text-sm" style="line-height: 1; color: var(--text-main);">{{ user.streak.current_streak|default:"0" }}</span>
+                <span class="text-xs" style="color: var(--text-muted); font-weight: 600;">Day Streak</span>
             </div>
         </div>
         
-        <div class="glass-panel flex items-center gap-3" style="padding: 0.5rem 1rem; border-radius: var(--radius-pill);">
-            <i class="fa-solid fa-coins text-gold" style="font-size: 1.2rem;"></i>
+        <!-- Gold Card -->
+        <div class="glass-panel flex items-center gap-3" style="padding: 0.6rem 1.25rem; border-radius: var(--radius-pill); border-color: rgba(245, 158, 11, 0.25); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(245, 158, 11, 0.15); display: flex; align-items: center; justify-content: center;">
+                <i class="fa-solid fa-coins text-gold" style="font-size: 1.1rem;"></i>
+            </div>
             <div class="flex-col">
-                <span class="font-bold text-sm" id="top-nav-gold" style="line-height: 1;">{{ user.character.gold }}</span>
-                <span class="text-xs" style="color: var(--text-muted);">Gold</span>
+                <span class="font-bold text-sm" id="top-nav-gold" style="line-height: 1; color: var(--gold);">{{ user.character.gold }}</span>
+                <span class="text-xs" style="color: var(--text-muted); font-weight: 600;">Gold Coins</span>
             </div>
         </div>
         
-        <div class="glass-panel flex items-center justify-center" style="width: 44px; height: 44px; border-radius: 50%;">
-            <i class="fa-solid fa-bell"></i>
+        <!-- Notification Indicator -->
+        <div class="glass-panel flex items-center justify-center" style="width: 44px; height: 44px; border-radius: 50%; cursor: pointer; transition: var(--transition);" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+            <i class="fa-solid fa-bell" style="color: var(--text-muted);"></i>
         </div>
     </div>
 </div>
 
-<div class="grid grid-cols-4" style="margin-bottom: 1.5rem;">
-    <!-- Character Card -->
-    <div class="card" style="grid-column: span 1; padding: 0; overflow: hidden; position: relative; display: flex; flex-direction: column;">
-        <div style="flex: 1; min-height: 250px; background: url('https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=600&auto=format&fit=crop') center/cover; position: relative;">
-            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(transparent, var(--bg-card) 90%);">
-                <h3 style="margin: 0; font-size: 1.5rem;">Lv {{ user.character.level }}</h3>
-                <div class="text-gold font-bold" style="font-size: 1.1rem; margin-bottom: 0.75rem;">{{ user.character.rpg_class|default:'Engineer' }}</div>
+<!-- Main Hero Dashboard Grid -->
+<div class="grid grid-cols-4" style="margin-bottom: 2rem;">
+    <!-- Character Hero Card -->
+    <div class="card" style="grid-column: span 1; padding: 0; overflow: hidden; position: relative; display: flex; flex-direction: column; border-color: var(--primary-glow);">
+        <div style="flex: 1; min-height: 270px; background: linear-gradient(180deg, rgba(139, 92, 246, 0.15) 0%, rgba(9, 10, 16, 0.95) 100%), url('https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=600&auto=format&fit=crop') center/cover; position: relative;">
+            <div style="position: absolute; top: 1rem; right: 1rem; padding: 0.35rem 0.85rem; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); border-radius: var(--radius-pill); border: 1px solid var(--primary-glow); font-weight: 700; font-size: 0.75rem; color: var(--primary);">
+                ACTIVE HERO
+            </div>
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(to top, var(--bg-card) 85%, transparent);">
+                <div class="flex items-center gap-2" style="margin-bottom: 0.25rem;">
+                    <h3 style="margin: 0; font-size: 1.6rem; font-weight: 800;">Lv {{ user.character.level }}</h3>
+                </div>
+                <div class="text-gradient font-bold" style="font-size: 1.1rem; margin-bottom: 0.75rem;">{{ user.character.rpg_class|default:'Adventurer' }}</div>
                 
                 <div class="flex justify-between text-xs" style="margin-bottom: 0.5rem;">
-                    <span style="color: var(--text-muted); font-style: italic;">"Progress, not perfection."</span>
-                    <span id="dash-xp-text" style="color: var(--text-muted);">...</span>
+                    <span style="color: var(--text-muted); font-weight: 600;">XP Progress</span>
+                    <span id="dash-xp-text" style="color: var(--secondary); font-weight: 700;">Loading...</span>
                 </div>
-                <div class="progress-bar-container" style="height: 6px;">
+                <div class="progress-bar-container" style="height: 8px;">
                     <div class="progress-bar-fill" id="dash-xp-bar" style="width: 0%;"></div>
                 </div>
                 
-                <a href="{% url 'character' %}" class="glass-panel flex justify-between items-center" style="margin-top: 1rem; padding: 0.75rem 1rem; border-radius: var(--radius-sm); color: var(--text-main); font-size: 0.85rem;">
-                    <span>View Character</span>
+                <a href="{% url 'character' %}" class="btn btn-outline" style="margin-top: 1.25rem; width: 100%; font-size: 0.85rem; padding: 0.6rem 1rem; justify-content: space-between;">
+                    <span>View Character Profile</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Today's Quests -->
+    <!-- Today's Active Quests -->
     <div class="card" style="grid-column: span 2;">
         <div class="flex justify-between items-center" style="margin-bottom: 1.5rem;">
-            <h3 style="margin: 0;">Today's Quests</h3>
-            <a href="{% url 'quests' %}" style="font-size: 0.85rem; color: var(--text-muted);">View All <i class="fa-solid fa-arrow-right"></i></a>
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-crosshairs" style="color: var(--primary); font-size: 1.2rem;"></i>
+                <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700;">Today's Active Quests</h3>
+            </div>
+            <a href="{% url 'quests' %}" class="btn btn-ghost" style="font-size: 0.85rem; padding: 0.4rem 0.8rem; color: var(--secondary);">
+                View All <i class="fa-solid fa-arrow-right" style="margin-left: 0.25rem;"></i>
+            </a>
         </div>
         
         <div id="active-quests-list" class="flex flex-col gap-3">
-            <div style="text-align: center; padding: 1rem; color: var(--text-muted);">Loading quests...</div>
+            <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                <div>Loading active quests...</div>
+            </div>
         </div>
     </div>
 
-    <!-- Right Sidebar (Quotes & Weekly Progress) -->
+    <!-- Right Sidebar (Daily Quote & Weekly Progress) -->
     <div class="flex flex-col gap-6" style="grid-column: span 1;">
-        <div class="card" style="padding: 0; overflow: hidden; height: 180px; position: relative;">
-            <div style="position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=400&auto=format&fit=crop') center/cover; opacity: 0.5;"></div>
-            <div style="position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-card), transparent);"></div>
-            <div style="position: absolute; bottom: 0; left: 0; padding: 1.5rem;">
-                <div style="font-size: 1.1rem; font-style: italic; line-height: 1.4; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
-                    "Small steps<br>lead to big worlds."
+        <!-- Quote Banner -->
+        <div class="card" style="padding: 0; overflow: hidden; height: 180px; position: relative; border-color: rgba(6, 182, 212, 0.25);">
+            <div style="position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=400&auto=format&fit=crop') center/cover; opacity: 0.35;"></div>
+            <div style="position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-card) 60%, transparent);"></div>
+            <div style="position: absolute; bottom: 0; left: 0; padding: 1.5rem; right: 0;">
+                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary); font-weight: 700; margin-bottom: 0.35rem;">
+                    <i class="fa-solid fa-quote-left"></i> MOTIVATION
+                </div>
+                <div style="font-size: 1rem; font-style: italic; line-height: 1.4; color: var(--text-main); font-weight: 500;">
+                    "Small steps taken consistently lead to massive real-world growth."
                 </div>
             </div>
         </div>
         
+        <!-- Weekly Chart Mini Summary -->
         <div class="card">
-            <h4 style="font-size: 0.9rem; margin-bottom: 0.25rem; color: var(--text-muted);">Weekly Progress</h4>
-            <div style="font-size: 0.85rem; margin-bottom: 1rem;">4 / 7 quests</div>
-            
-            <!-- Mini Chart -->
-            <div style="height: 80px; width: 100%; display: flex; align-items: flex-end; justify-content: space-between; gap: 4px;">
-                <div style="width: 12%; background: rgba(140, 82, 255, 0.2); height: 40%; border-radius: 4px 4px 0 0;"></div>
-                <div style="width: 12%; background: rgba(140, 82, 255, 0.4); height: 60%; border-radius: 4px 4px 0 0;"></div>
-                <div style="width: 12%; background: rgba(140, 82, 255, 0.6); height: 80%; border-radius: 4px 4px 0 0;"></div>
-                <div style="width: 12%; background: rgba(140, 82, 255, 0.8); height: 100%; border-radius: 4px 4px 0 0;"></div>
-                <div style="width: 12%; background: var(--primary); height: 70%; border-radius: 4px 4px 0 0; box-shadow: 0 0 10px var(--primary-glow);"></div>
-                <div style="width: 12%; background: rgba(255, 255, 255, 0.05); height: 20%; border-radius: 4px 4px 0 0;"></div>
-                <div style="width: 12%; background: rgba(255, 255, 255, 0.05); height: 20%; border-radius: 4px 4px 0 0;"></div>
+            <div class="flex justify-between items-center" style="margin-bottom: 0.75rem;">
+                <h4 style="font-size: 0.95rem; margin: 0; color: var(--text-main); font-weight: 700;">Weekly Activity</h4>
+                <span class="badge badge-medium">Active</span>
             </div>
-            <div class="flex justify-between mt-2" style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.5rem;">
-                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            <div style="font-size: 0.85rem; margin-bottom: 1rem; color: var(--text-muted);">Quest consistency rate</div>
+            
+            <!-- Mini Bar Visualizer -->
+            <div style="height: 85px; width: 100%; display: flex; align-items: flex-end; justify-content: space-between; gap: 6px; padding: 0.5rem 0;">
+                <div style="width: 12%; background: rgba(139, 92, 246, 0.25); height: 45%; border-radius: 6px 6px 0 0;" title="Mon"></div>
+                <div style="width: 12%; background: rgba(139, 92, 246, 0.45); height: 65%; border-radius: 6px 6px 0 0;" title="Tue"></div>
+                <div style="width: 12%; background: rgba(139, 92, 246, 0.65); height: 85%; border-radius: 6px 6px 0 0;" title="Wed"></div>
+                <div style="width: 12%; background: rgba(139, 92, 246, 0.85); height: 100%; border-radius: 6px 6px 0 0;" title="Thu"></div>
+                <div style="width: 12%; background: var(--primary); height: 75%; border-radius: 6px 6px 0 0; box-shadow: 0 0 12px var(--primary-glow);" title="Fri"></div>
+                <div style="width: 12%; background: rgba(255, 255, 255, 0.08); height: 30%; border-radius: 6px 6px 0 0;" title="Sat"></div>
+                <div style="width: 12%; background: rgba(255, 255, 255, 0.08); height: 25%; border-radius: 6px 6px 0 0;" title="Sun"></div>
+            </div>
+            <div class="flex justify-between" style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; margin-top: 0.5rem;">
+                <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Attribute Bar -->
-<div class="card flex justify-between items-center" style="padding: 1rem 2rem;">
+<!-- Attribute Stats Overview Bar -->
+<div class="card flex justify-between items-center flex-wrap gap-4" style="padding: 1.25rem 2rem;">
     <div class="flex items-center gap-4">
-        <!-- Avatar Snippet -->
-        <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(255,255,255,0.1);">
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ user.username }}" style="width: 100%; height: 100%; object-fit: cover;">
+        <!-- User Avatar Snippet -->
+        <div style="width: 46px; height: 46px; border-radius: 50%; overflow: hidden; border: 2px solid var(--primary-glow); box-shadow: 0 0 10px var(--primary-glow); background: var(--bg-dark);">
+            <img src="{% if user.avatar %}{{ user.avatar.url }}{% else %}https://api.dicebear.com/7.x/avataaars/svg?seed={{ user.username }}{% endif %}" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div>
-            <div class="font-bold text-sm">{{ user.username|upper }}</div>
-            <div class="text-xs" style="color: var(--text-muted);">Lv {{ user.character.level }} {{ user.character.rpg_class|default:'Engineer' }}</div>
+            <div class="font-bold text-sm" style="color: var(--text-main);">{{ user.username|upper }}</div>
+            <div class="text-xs" style="color: var(--text-muted); font-weight: 500;">Lv {{ user.character.level }} {{ user.character.rpg_class|default:'Engineer' }}</div>
         </div>
     </div>
     
-    <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.1);"></div>
+    <div style="width: 1px; height: 36px; background: var(--border-color);" class="hidden-mobile"></div>
     
+    <!-- Attribute Stat Pills -->
     <div class="flex items-center gap-2">
-        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 75, 75, 0.15); display: flex; align-items: center; justify-content: center; color: var(--attr-str);">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); display: flex; align-items: center; justify-content: center; color: var(--attr-str);">
             <i class="fa-solid fa-dumbbell"></i>
         </div>
         <div class="flex-col">
-            <span class="text-xs" style="color: var(--text-muted);">STR</span>
+            <span class="text-xs" style="color: var(--text-muted); font-weight: 700;">STR</span>
             <span class="font-bold text-lg" style="line-height: 1;">{{ user.character.total_strength }}</span>
         </div>
     </div>
     
     <div class="flex items-center gap-2">
-        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(75, 123, 255, 0.15); display: flex; align-items: center; justify-content: center; color: var(--attr-int);">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center; color: var(--attr-int);">
             <i class="fa-solid fa-brain"></i>
         </div>
         <div class="flex-col">
-            <span class="text-xs" style="color: var(--text-muted);">INT</span>
+            <span class="text-xs" style="color: var(--text-muted); font-weight: 700;">INT</span>
             <span class="font-bold text-lg" style="line-height: 1;">{{ user.character.total_intellect }}</span>
         </div>
     </div>
     
     <div class="flex items-center gap-2">
-        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(0, 230, 118, 0.15); display: flex; align-items: center; justify-content: center; color: var(--attr-agi);">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); display: flex; align-items: center; justify-content: center; color: var(--attr-agi);">
             <i class="fa-solid fa-bolt"></i>
         </div>
         <div class="flex-col">
-            <span class="text-xs" style="color: var(--text-muted);">AGI</span>
+            <span class="text-xs" style="color: var(--text-muted); font-weight: 700;">AGI</span>
             <span class="font-bold text-lg" style="line-height: 1;">{{ user.character.total_agility }}</span>
         </div>
     </div>
     
     <div class="flex items-center gap-2">
-        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 61, 0, 0.15); display: flex; align-items: center; justify-content: center; color: var(--attr-vit);">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.3); display: flex; align-items: center; justify-content: center; color: var(--attr-vit);">
             <i class="fa-solid fa-heart"></i>
         </div>
         <div class="flex-col">
-            <span class="text-xs" style="color: var(--text-muted);">VIT</span>
+            <span class="text-xs" style="color: var(--text-muted); font-weight: 700;">VIT</span>
             <span class="font-bold text-lg" style="line-height: 1;">{{ user.character.total_vitality }}</span>
         </div>
     </div>
     
     <div class="flex items-center gap-2">
-        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(179, 136, 255, 0.15); display: flex; align-items: center; justify-content: center; color: var(--attr-wis);">
-            <i class="fa-solid fa-book"></i>
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.3); display: flex; align-items: center; justify-content: center; color: var(--attr-wis);">
+            <i class="fa-solid fa-book-open"></i>
         </div>
         <div class="flex-col">
-            <span class="text-xs" style="color: var(--text-muted);">WIS</span>
+            <span class="text-xs" style="color: var(--text-muted); font-weight: 700;">WIS</span>
             <span class="font-bold text-lg" style="line-height: 1;">{{ user.character.total_wisdom }}</span>
         </div>
     </div>
     
     <div class="flex items-center gap-2">
-        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(253, 216, 53, 0.15); display: flex; align-items: center; justify-content: center; color: var(--attr-dis);">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.3); display: flex; align-items: center; justify-content: center; color: var(--attr-dis);">
             <i class="fa-solid fa-crosshairs"></i>
         </div>
         <div class="flex-col">
-            <span class="text-xs" style="color: var(--text-muted);">DIS</span>
+            <span class="text-xs" style="color: var(--text-muted); font-weight: 700;">DIS</span>
             <span class="font-bold text-lg" style="line-height: 1;">{{ user.character.total_discipline }}</span>
         </div>
     </div>
@@ -187,8 +213,10 @@
         // Load progression stats
         try {
             const prog = await apiFetch('/api/progression/');
-            document.getElementById('dash-xp-text').innerText = `${prog.current_level_xp} / ${prog.xp_for_next_level} XP`;
-            document.getElementById('dash-xp-bar').style.width = `${prog.progress_percent}%`;
+            const xpText = document.getElementById('dash-xp-text');
+            const xpBar = document.getElementById('dash-xp-bar');
+            if (xpText) xpText.innerText = `${prog.current_level_xp} / ${prog.xp_for_next_level} XP`;
+            if (xpBar) xpBar.style.width = `${prog.progress_percent}%`;
         } catch (e) {
             console.error(e);
         }
@@ -211,8 +239,8 @@
                 'STR': '<i class="fa-solid fa-dumbbell"></i>',
                 'INT': '<i class="fa-solid fa-laptop-code"></i>',
                 'WIS': '<i class="fa-solid fa-book-open"></i>',
-                'VIT': '<i class="fa-solid fa-droplet"></i>',
-                'AGI': '<i class="fa-solid fa-person-running"></i>',
+                'VIT': '<i class="fa-solid fa-heart-pulse"></i>',
+                'AGI': '<i class="fa-solid fa-bolt"></i>',
                 'DIS': '<i class="fa-solid fa-bullseye"></i>',
             };
 
@@ -227,25 +255,24 @@
             
             activeQuests.forEach(q => {
                 html += `
-                    <div class="glass-panel flex items-center justify-between" style="padding: 1rem 1.25rem; transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='var(--bg-panel)'">
+                    <div class="glass-panel flex items-center justify-between" style="padding: 1rem 1.25rem; transition: var(--transition); border-radius: var(--radius-md);" onmouseover="this.style.borderColor='var(--primary-glow)'" onmouseout="this.style.borderColor='var(--border-color)'">
                         <div class="flex items-center gap-4">
-                            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: ${attrColors[q.attribute]};">
+                            <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: ${attrColors[q.attribute] || 'var(--primary)'};">
                                 ${attrIcons[q.attribute] || '<i class="fa-solid fa-star"></i>'}
                             </div>
                             <div>
-                                <h4 style="margin: 0; font-size: 1rem;">${q.title}</h4>
-                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
-                                    ${q.description || 'Complete this task to advance.'}
+                                <h4 style="margin: 0; font-size: 1rem; font-weight: 700;">${q.title}</h4>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+                                    ${q.description || 'Complete this quest to earn XP and attributes.'}
                                 </div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-6">
-                            <div class="flex items-center gap-3 text-xs font-semibold">
-                                <span style="color: var(--secondary);">+${q.xp_reward} XP</span>
-                                <span style="color: ${attrColors[q.attribute]};">+1 ${q.attribute}</span>
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-2 text-xs font-semibold">
+                                <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: var(--secondary); border: 1px solid rgba(6, 182, 212, 0.3);">+${q.xp_reward} XP</span>
+                                <span class="badge" style="background: rgba(255, 255, 255, 0.05); color: ${attrColors[q.attribute] || 'var(--primary)'}; border: 1px solid rgba(255, 255, 255, 0.1);">+1 ${q.attribute}</span>
                             </div>
-                            <div style="width: 24px; height: 24px; border: 2px solid rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer; transition: all 0.2s;" class="flex items-center justify-center hover-checkbox" onclick="completeQuest(${q.id}, this)">
-                                <!-- Checkbox UI -->
+                            <div style="width: 28px; height: 28px; border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer; transition: all 0.2s;" class="flex items-center justify-center hover-checkbox" onclick="completeQuest(${q.id}, this)" title="Complete Quest">
                             </div>
                         </div>
                     </div>
@@ -257,24 +284,23 @@
                 const completedToday = h.last_completed_at && h.last_completed_at.startsWith(today);
                 
                 html += `
-                    <div class="glass-panel flex items-center justify-between" style="padding: 1rem 1.25rem; transition: background 0.2s; cursor: pointer; ${completedToday ? 'opacity: 0.5;' : ''}" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='var(--bg-panel)'">
+                    <div class="glass-panel flex items-center justify-between" style="padding: 1rem 1.25rem; transition: var(--transition); border-radius: var(--radius-md); ${completedToday ? 'opacity: 0.65;' : ''}" onmouseover="this.style.borderColor='var(--secondary-glow)'" onmouseout="this.style.borderColor='var(--border-color)'">
                         <div class="flex items-center gap-4">
-                            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: ${attrColors[h.attribute]};">
-                                ${attrIcons[h.attribute] || '<i class="fa-solid fa-star"></i>'}
+                            <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: ${attrColors[h.attribute] || 'var(--secondary)'};">
+                                ${attrIcons[h.attribute] || '<i class="fa-solid fa-repeat"></i>'}
                             </div>
                             <div>
-                                <h4 style="margin: 0; font-size: 1rem; ${completedToday ? 'text-decoration: line-through;' : ''}">${h.title}</h4>
-                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
-                                    Daily habit (Streak: ${h.streak_count})
+                                <h4 style="margin: 0; font-size: 1rem; font-weight: 700; ${completedToday ? 'text-decoration: line-through;' : ''}">${h.title}</h4>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+                                    Daily Habit • <span style="color: var(--gold); font-weight: 600;">🔥 ${h.streak_count} day streak</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-6">
-                            <div class="flex items-center gap-3 text-xs font-semibold">
-                                <span style="color: var(--secondary);">+${h.xp_reward} XP</span>
-                                <span style="color: ${attrColors[h.attribute]};">+1 ${h.attribute}</span>
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-2 text-xs font-semibold">
+                                <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: var(--secondary); border: 1px solid rgba(6, 182, 212, 0.3);">+${h.xp_reward} XP</span>
                             </div>
-                            <div style="width: 24px; height: 24px; border: 2px solid ${completedToday ? 'var(--primary)' : 'rgba(255,255,255,0.2)'}; background: ${completedToday ? 'var(--primary)' : 'transparent'}; border-radius: 6px; cursor: pointer; transition: all 0.2s;" class="flex items-center justify-center hover-checkbox" ${completedToday ? '' : `onclick="completeHabit(${h.id}, this)"`}>
+                            <div style="width: 28px; height: 28px; border: 2px solid ${completedToday ? 'var(--primary)' : 'rgba(255,255,255,0.2)'}; background: ${completedToday ? 'var(--primary)' : 'transparent'}; border-radius: 8px; cursor: pointer; transition: all 0.2s;" class="flex items-center justify-center hover-checkbox" ${completedToday ? '' : `onclick="completeHabit(${h.id}, this)"`} title="${completedToday ? 'Completed' : 'Complete Habit'}">
                                 ${completedToday ? '<i class="fa-solid fa-check text-white text-xs"></i>' : ''}
                             </div>
                         </div>
@@ -283,16 +309,22 @@
             });
             
             if (!html) {
-                list.innerHTML = `<div style="text-align: center; padding: 2rem; color: var(--text-muted);">All caught up for today! Time to relax or create a new quest.</div>`;
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);">
+                        <i class="fa-solid fa-circle-check" style="font-size: 2.5rem; color: var(--success); margin-bottom: 0.75rem; opacity: 0.8;"></i>
+                        <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.25rem;">All Caught Up!</div>
+                        <div>You have completed all active tasks for today. Great job!</div>
+                    </div>
+                `;
             } else {
                 list.innerHTML = html;
             }
             
-            // Add some global CSS for the hover checkbox effect
+            // Add hover checkbox CSS
             const style = document.createElement('style');
             style.innerHTML = `
-                .hover-checkbox:hover { border-color: var(--primary) !important; background: rgba(140, 82, 255, 0.2) !important; }
-                .hover-checkbox:active { transform: scale(0.9); }
+                .hover-checkbox:hover { border-color: var(--primary) !important; background: rgba(139, 92, 246, 0.25) !important; transform: scale(1.05); }
+                .hover-checkbox:active { transform: scale(0.95); }
             `;
             document.head.appendChild(style);
 

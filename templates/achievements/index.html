@@ -1,30 +1,42 @@
 {% extends 'base.html' %}
 
-{% block title %}Achievements | LIFE RPG{% endblock %}
+{% block title %}Achievements Gallery | LIFE RPG{% endblock %}
 
 {% block content %}
-<div class="flex justify-between items-center" style="margin-bottom: 2rem;">
-    <h2 style="font-size: 1.8rem; margin: 0;">Achievements</h2>
-    <div class="font-bold text-lg text-gold flex items-center gap-2">
-        <i class="fa-solid fa-coins"></i> {{ user.character.gold }}
+<!-- Page Header -->
+<div class="flex justify-between items-center flex-wrap gap-4" style="margin-bottom: 2rem;">
+    <div>
+        <h2 style="font-size: 2rem; margin-bottom: 0.25rem; font-weight: 800;" class="text-gradient">Achievement Gallery</h2>
+        <div style="color: var(--text-muted); font-size: 0.95rem; font-weight: 500;">Unlock badges and earn gold rewards as you hit major milestones.</div>
+    </div>
+    
+    <div class="glass-panel flex items-center gap-3" style="padding: 0.6rem 1.25rem; border-radius: var(--radius-pill); border-color: rgba(245, 158, 11, 0.3);">
+        <i class="fa-solid fa-coins text-gold" style="font-size: 1.2rem;"></i>
+        <div class="flex-col">
+            <span class="font-bold text-sm text-gold" style="line-height: 1;">{{ user.character.gold }}</span>
+            <span class="text-xs" style="color: var(--text-muted); font-weight: 600;">Gold Balance</span>
+        </div>
     </div>
 </div>
 
 <!-- Filters -->
-<div class="flex items-center gap-2" style="margin-bottom: 2rem;">
-    <div class="glass-panel text-sm font-semibold active filter-btn" style="padding: 0.5rem 2rem; cursor: pointer; border-radius: var(--radius-pill);">All</div>
-    <div class="glass-panel text-sm font-semibold filter-btn" style="padding: 0.5rem 2rem; cursor: pointer; border-radius: var(--radius-pill); opacity: 0.5;">In Progress</div>
-    <div class="glass-panel text-sm font-semibold filter-btn" style="padding: 0.5rem 2rem; cursor: pointer; border-radius: var(--radius-pill); opacity: 0.5;">Completed</div>
+<div class="flex items-center gap-2 flex-wrap" style="margin-bottom: 1.75rem;">
+    <div class="glass-panel text-sm font-semibold active filter-btn" style="padding: 0.6rem 1.75rem; cursor: pointer; border-radius: var(--radius-pill);">
+        <i class="fa-solid fa-trophy" style="margin-right: 0.4rem;"></i> Unlocked Milestones
+    </div>
 </div>
 
+<!-- Achievements List Container -->
 <div class="flex flex-col gap-4" id="achievements-container">
-    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
-        Loading achievements...
+    <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);" class="glass-panel">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 0.75rem; color: var(--primary);"></i>
+        <div>Loading your unlocked achievements...</div>
     </div>
 </div>
 
 <style>
-    .filter-btn.active { background: rgba(140, 82, 255, 0.2); color: var(--primary); border-color: rgba(140, 82, 255, 0.5); opacity: 1 !important; }
+    .filter-btn { transition: var(--transition); border: 1px solid var(--border-color); color: var(--text-muted); }
+    .filter-btn.active { background: linear-gradient(90deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.05)); color: var(--primary); border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 0 12px var(--primary-glow); }
 </style>
 
 <script>
@@ -34,29 +46,37 @@
             const container = document.getElementById('achievements-container');
             
             if (achievements.length === 0) {
-                container.innerHTML = `<div style="text-align: center; padding: 3rem; color: var(--text-muted);">You have not unlocked any achievements yet. Keep adventuring!</div>`;
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);" class="glass-panel">
+                        <i class="fa-solid fa-medal" style="font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.4; color: var(--gold);"></i>
+                        <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.25rem;">No Achievements Unlocked Yet</div>
+                        <div>Complete quests and maintain daily streaks to earn your first badge!</div>
+                    </div>
+                `;
                 return;
             }
 
             container.innerHTML = achievements.map(a => `
-                <div class="card flex justify-between items-center" style="padding: 1.5rem 2rem; background: var(--bg-card); border-radius: var(--radius-lg);">
-                    <div class="flex items-center gap-6">
-                        <div style="width: 64px; height: 64px; border-radius: 16px; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); display: flex; justify-content: center; align-items: center; font-size: 2rem; flex-shrink: 0; box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);">
+                <div class="card flex justify-between items-center flex-wrap gap-4" style="padding: 1.5rem 2rem; border-radius: var(--radius-lg); border-color: rgba(245, 158, 11, 0.25); background: linear-gradient(135deg, rgba(26, 29, 50, 0.8) 0%, rgba(18, 20, 36, 0.9) 100%);">
+                    <div class="flex items-center gap-5">
+                        <div style="width: 64px; height: 64px; border-radius: 16px; background: rgba(245, 158, 11, 0.12); border: 2px solid rgba(245, 158, 11, 0.4); display: flex; justify-content: center; align-items: center; font-size: 2.2rem; flex-shrink: 0; box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);">
                             ${a.achievement.icon || '🏆'}
                         </div>
                         <div>
-                            <h3 style="margin: 0; margin-bottom: 0.35rem; font-size: 1.15rem;">${a.achievement.name}</h3>
-                            <p class="text-muted" style="font-size: 0.85rem; margin: 0;">${a.achievement.description}</p>
+                            <div class="flex items-center gap-2" style="margin-bottom: 0.25rem;">
+                                <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800;" class="text-gradient-gold">${a.achievement.name}</h3>
+                                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3);">UNLOCKED</span>
+                            </div>
+                            <p style="font-size: 0.875rem; color: var(--text-muted); margin: 0; font-weight: 500;">${a.achievement.description}</p>
                         </div>
                     </div>
                     
-                    <div class="flex-col items-end gap-2">
-                        <div style="color: var(--gold); font-weight: bold; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="font-size: 0.75rem; color: var(--secondary);">Completed</span>
-                            +${a.achievement.reward_gold} Gold
+                    <div class="flex-col items-end gap-1">
+                        <div style="color: var(--gold); font-weight: 800; font-size: 1rem; display: flex; align-items: center; gap: 0.4rem;">
+                            <i class="fa-solid fa-coins"></i> +${a.achievement.reward_gold} Gold Earned
                         </div>
-                        <div style="font-size: 0.75rem; color: rgba(255,255,255,0.4);">
-                            ${new Date(a.unlocked_at).toLocaleDateString()}
+                        <div style="font-size: 0.75rem; color: var(--text-subtle); font-weight: 500;">
+                            Unlocked on ${new Date(a.unlocked_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                         </div>
                     </div>
                 </div>
