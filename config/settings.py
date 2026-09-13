@@ -12,6 +12,12 @@ env = environ.Env(
 
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
+# Clean up empty environment variables to ensure defaults are used
+# (Vercel sometimes sets them as empty strings during the build phase)
+for key in list(os.environ.keys()):
+    if os.environ[key] == "":
+        del os.environ[key]
+
 SECRET_KEY = env(
     'SECRET_KEY',
     default='django-insecure-default-key-for-dev'
