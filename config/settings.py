@@ -29,16 +29,26 @@ ALLOWED_HOSTS = env.list(
     'ALLOWED_HOSTS',
     default=['*']
 )
+# Ensure Vercel domains are automatically allowed even if custom ALLOWED_HOSTS is defined
+if '*' not in ALLOWED_HOSTS:
+    if '.vercel.app' not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append('.vercel.app')
 
 CSRF_TRUSTED_ORIGINS = env.list(
     'CSRF_TRUSTED_ORIGINS',
     default=[]
 )
+# Ensure Vercel domains are trusted for CSRF protection on forms
+if 'https://*.vercel.app' not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append('https://*.vercel.app')
 
 CORS_ALLOWED_ORIGINS = env.list(
     'CORS_ALLOWED_ORIGINS',
     default=[]
 )
+if 'https://*.vercel.app' not in CORS_ALLOWED_ORIGINS:
+    CORS_ALLOWED_ORIGINS.append('https://*.vercel.app')
+
 
 
 INSTALLED_APPS = [
